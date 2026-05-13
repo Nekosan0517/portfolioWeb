@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	side: 'left' | 'right';
+	id: string;
+}
+
+const { side, id } = Astro.props;
+
+/**
+ * 1. データを取得
+ * ここで明示的に型を添えることで、下のHTML内では型を書く必要がなくなります。
+ */
+const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
+
+/**
+ * 2. ソート処理
+ * 前段で型が確定しているため、a と b に型を書かなくても TypeScript は「作品データ」だと理解します。
+ */
+const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
+
+const sideClasses = side === 'left' 
+	? 'left-0 border-r border-white/10' 
+	: 'right-0 border-l border-white/10';
+---
+
+<aside
+	id={id}
+	class:list={[
+		"fixed top-0 z-50 h-full w-80 max-w-[80vw] transition-transform duration-500 ease-in-out",
+		"bg-black/40 backdrop-blur-3xl shadow-2xl",
+		sideClasses
+	]}
+	aria-hidden="true"
+>
+	<div class="flex flex-col h-full p-8">
+		<div class="mb-12">
+			<h2 class="text-xs font-bold tracking-[0.2em] text-white/40 uppercase">
+				{side === 'left' ? 'Navigation' : 'Works Index'}
+			</h2>
+			<p class="mt-2 text-sm text-white/20">
+				{side === 'left' ? 'Select category' : 'Explore my creations'}
+			</p>
+		</div>
+
+		<nav class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+			<ul class="space-y-6">
+				{side === 'left' ? (
+					['GAME', 'TOOL', 'VIDEO'].map((cat) => (
+						<li class="group">
+							<a href={`/category/${cat.toLowerCase()}`} class="text-2xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
+								<span class="w-0 h-[1px] bg-white group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
+								{cat}
+							</a>
+						</li>
+					))
+				) : (
+					/* 【修正ポイント】
+					   (work: CollectionEntry<'works'>) と書いていた部分から型を削除しました。
+					   sortedWorks 自体が既に型を持っているため、ここでは単に (work) と書くだけで
+					   TypeScript の補完（work.data...など）は完璧に動作します。
+					*/
+					sortedWorks.map((work) => (
+						<li class="group">
+							<a href={`/works/${work.slug}`} class="block">
+								<span class="text-xs text-white/30 block mb-1 uppercase tracking-tighter">
+									{work.data.category}
+								</span>
+								<div class="text-xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
+									<span class="w-0 h-[1px] bg-white group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3"></span>
+									{work.data.title}
+								</div>
+							</a>
+						</li>
+					))
+				)}
+			</ul>
+		</nav>
+
+		<div class="mt-auto pt-6 border-t border-white/5">
+			<button 
+				class="text-xs text-white/30 hover:text-white transition-colors uppercase tracking-widest" 
+				onclick={`document.body.classList.remove('is-${side}-open', 'is-drawer-open')`}
+			>
+				[ Close ]
+			</button>
+		</div>
+	</div>
+</aside>
+
+<style>
+	.custom-scrollbar::-webkit-scrollbar { width: 2px; }
+	.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+</style>

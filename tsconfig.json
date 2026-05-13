@@ -1,5 +1,21 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
+  "compilerOptions": {
+    /* 基本設定 */
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "strict": true,
+
+    /* baseUrl を省略する場合、paths の値（右側）は必ず "./" で開始する必要があります。
+    */
+    "paths": {
+      "astro:content": ["./.astro/types.d.ts"],
+      "@/*": ["./src/*"]
+    }
+  },
   "exclude": ["dist"]
 }
