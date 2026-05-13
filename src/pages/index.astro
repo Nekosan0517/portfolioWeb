@@ -2,7 +2,7 @@
 // 1. 必要な部品をインポートする
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayouts.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
 // 2. 作品データを取得して並び替える
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
@@ -25,7 +25,7 @@ const title = "Takuma Mineta | Portfolio";
 	<section class="grid grid-cols-1 md:grid-cols-2 gap-12">
 		{sortedWorks.map((work: CollectionEntry<'works'>) => (
 			<article class="group relative">
-				<a href={`/works/${work.slug}`} class="block no-underline">
+				<a href={`/works/${work.id}`} class="block no-underline">
 					<div class="relative aspect-video overflow-hidden bg-white/5 border border-white/10 transition-all duration-500 group-hover:border-white/30 group-hover:-translate-y-2">
 						{work.data.thumbnail ? (
 							<img 

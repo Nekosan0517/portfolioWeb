@@ -1,22 +1,25 @@
 ---
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayouts.astro';
+// BaseLayouts.astro から BaseLayout.astro への名称変更を反映
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
 /**
  * 1. ページ生成パスの定義
  */
 export async function getStaticPaths() {
+	// フォルダ名を src/content/works に変更した前提です
 	const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
+	
 	return allWorks.map((entry) => ({
-		params: { slug: entry.slug },
+		// 【重要】 type: 'data' では entry.slug ではなく entry.id を使用します
+		params: { slug: entry.id },
 		props: { entry },
 	}));
 }
 
 /**
  * 2. 型の定義と受け取り
- * ここで明示的に型を定義することで、entry 内のデータがすべて補完されます
  */
 interface Props {
 	entry: CollectionEntry<'works'>;
@@ -66,8 +69,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 				</h2>
 				<div class="prose prose-invert max-w-none text-white/70 leading-loose font-light">
 					<p>
-						現在は JSON のデータを表示しています。
-						今後、この場所を Markdown で記述された詳細文へ拡張することも可能です。
+						現在は JSON データの description を表示しています。
 					</p>
 				</div>
 			</div>
