@@ -1,9 +1,8 @@
 ---
-// 1. 必要なパーツとスタイルのインポート
 import Background from '../components/Visual/Background.astro';
 import Drawer from '../components/Navigation/Drawer.astro';
 import DrawerTrigger from '../components/Navigation/DrawerButton.astro';
-import '../styles/global.css'; // Tailwindの設定を読み込む
+import '../styles/global.css';
 
 interface Props {
 	title?: string;
@@ -35,9 +34,11 @@ const {
 		<DrawerTrigger side="left" targetId="drawer-left" />
 		<DrawerTrigger side="right" targetId="drawer-right" />
 
-		<main class="relative z-10 min-h-screen px-6 py-24 md:px-12 lg:px-24">
-			<div class="max-w-6xl mx-auto">
-				<slot />
+		<main class="relative z-10 min-h-screen w-full flex flex-col items-center">
+			<div class="w-full max-w-screen-xl 2xl:max-w-screen-2xl px-6 py-24 md:px-12 lg:px-24 flex flex-col items-center">
+				<div class="w-full">
+					<slot />
+				</div>
 			</div>
 		</main>
 
@@ -49,7 +50,7 @@ const {
 				scroll-behavior: smooth;
 			}
 			body {
-				background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%);
+				background: radial-gradient(circle at 50% 50%, #0d0d0d 0%, #000000 100%);
 			}
 		</style>
 	</body>
