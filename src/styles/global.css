@@ -1,0 +1,27 @@
+/* Tailwind CSS のベース機能を読み込みます */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* サイト全体の共通スタイル */
+@layer base {
+  :root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+  }
+
+  body {
+    @apply bg-black text-white;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* カスタムスクロールバー（ドロワー用） */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
