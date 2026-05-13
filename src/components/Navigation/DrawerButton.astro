@@ -7,8 +7,15 @@ interface Props {
 
 const { side, targetId } = Astro.props;
 
-// 配置場所を計算（左ならleft:0、右ならright:0）
-const positionClass = side === 'left' ? 'left-0 rounded-r-full border-l-0' : 'right-0 rounded-l-full border-r-0';
+/**
+ * 配置と連動移動のロジック
+ * - left-0 / right-0: 初期位置
+ * - [.is-left-open_&]:translate-x-80: 左ドロワーが開いた時、右に80(20rem)移動
+ * - [.is-right-open_&]:-translate-x-80: 右ドロワーが開いた時、左に80(20rem)移動
+ */
+const positionClass = side === 'left' 
+	? 'left-0 rounded-r-full border-l-0 [.is-left-open_&]:translate-x-80' 
+	: 'right-0 rounded-l-full border-r-0 [.is-right-open_&]:-translate-x-80';
 ---
 
 <button
@@ -16,9 +23,9 @@ const positionClass = side === 'left' ? 'left-0 rounded-r-full border-l-0' : 'ri
 	data-target={targetId}
 	data-side={side}
 	class:list={[
-		"fixed top-1/2 z-[60] h-24 w-6 -translate-y-1/2 transition-all duration-300",
-		"bg-white/5 hover:bg-white/20 backdrop-blur-md border border-white/20",
-		"flex items-center justify-center group focus:outline-none focus:ring-2 focus:ring-blue-500/50",
+		"fixed top-1/2 z-[60] h-24 w-6 -translate-y-1/2 transition-all duration-700 ease-in-out",
+		"bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20",
+		"flex items-center justify-center group focus:outline-none",
 		positionClass
 	]}
 	aria-label={`Open ${side} menu`}
@@ -26,8 +33,10 @@ const positionClass = side === 'left' ? 'left-0 rounded-r-full border-l-0' : 'ri
 	<svg 
 		xmlns="http://www.w3.org/2000/svg" 
 		class:list={[
-			"w-4 h-4 text-white/50 group-hover:text-white transition-transform duration-300",
-			side === 'left' ? "rotate-0 group-hover:translate-x-1" : "rotate-180 group-hover:-translate-x-1"
+			"w-4 h-4 text-white/50 group-hover:text-white transition-transform duration-500",
+			side === 'left' 
+				? "rotate-0 [.is-left-open_&]:rotate-180" 
+				: "rotate-180 [.is-right-open_&]:rotate-0"
 		]} 
 		fill="none" 
 		viewBox="0 0 24 24" 
@@ -38,30 +47,28 @@ const positionClass = side === 'left' ? 'left-0 rounded-r-full border-l-0' : 'ri
 </button>
 
 <script>
-	// クライアント側（ブラウザ）で動くロジック
 	function setupDrawerButton() {
 		const buttons = document.querySelectorAll('button[data-target]');
-		
 		buttons.forEach(button => {
 			button.addEventListener('click', () => {
-				const targetId = button.getAttribute('data-target');
 				const side = button.getAttribute('data-side');
 				const body = document.body;
 
 				if (side === 'left') {
 					body.classList.toggle('is-left-open');
+					// 反対側が開いていたら閉じる（干渉防止）
+					body.classList.remove('is-right-open');
 				} else {
 					body.classList.toggle('is-right-open');
+					body.classList.remove('is-left-open');
 				}
 
-				// いずれかが開いていれば全体のぼかし用クラスを付与
 				const isOpen = body.classList.contains('is-left-open') || body.classList.contains('is-right-open');
 				body.classList.toggle('is-drawer-open', isOpen);
 			});
 		});
 	}
 
-	// AstroのView Transitionsに対応するための実行コード
 	setupDrawerButton();
 	document.addEventListener('astro:after-swap', setupDrawerButton);
 </script>

@@ -11,26 +11,29 @@ const { side, id } = Astro.props;
 
 /**
  * 1. データを取得
- * ここで明示的に型を添えることで、下のHTML内では型を書く必要がなくなります。
  */
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
 
 /**
  * 2. ソート処理
- * 前段で型が確定しているため、a と b に型を書かなくても TypeScript は「作品データ」だと理解します。
  */
 const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
 
+/**
+ * 3. 配置と表示/非表示のロジック
+ * - translate-x-full: 画面の右/左外に配置
+ * - [.is-side-open_&]:translate-x-0: bodyにクラスがついた時だけ画面内に戻す
+ */
 const sideClasses = side === 'left' 
-	? 'left-0 border-r border-white/10' 
-	: 'right-0 border-l border-white/10';
+	? 'left-0 -translate-x-full [.is-left-open_&]:translate-x-0 border-r border-white/10' 
+	: 'right-0 translate-x-full [.is-right-open_&]:translate-x-0 border-l border-white/10';
 ---
 
 <aside
 	id={id}
 	class:list={[
-		"fixed top-0 z-50 h-full w-80 max-w-[80vw] transition-transform duration-500 ease-in-out",
-		"bg-black/40 backdrop-blur-3xl shadow-2xl",
+		"fixed top-0 z-50 h-full w-80 max-w-[80vw] transition-transform duration-700 ease-in-out",
+		"bg-black/60 backdrop-blur-3xl shadow-2xl",
 		sideClasses
 	]}
 	aria-hidden="true"
@@ -57,11 +60,6 @@ const sideClasses = side === 'left'
 						</li>
 					))
 				) : (
-					/* 【修正ポイント】
-					   (work: CollectionEntry<'works'>) と書いていた部分から型を削除しました。
-					   sortedWorks 自体が既に型を持っているため、ここでは単に (work) と書くだけで
-					   TypeScript の補完（work.data...など）は完璧に動作します。
-					*/
 					sortedWorks.map((work) => (
 						<li class="group">
 							<a href={`/works/${work.id}`} class="block">
