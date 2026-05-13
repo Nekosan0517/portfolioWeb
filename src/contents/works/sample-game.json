@@ -1,0 +1,9 @@
+{
+  "title": "ゲームタイトル",
+  "description": "ゲーム説明文",
+  "category": "game",
+  "thumbnail": "/images/works/gametitle.jpg",
+  "tags": ["Unity", "C#", "Blender"],
+  "url": "https://example.com/fantasy-train",
+  "order": 1
+}

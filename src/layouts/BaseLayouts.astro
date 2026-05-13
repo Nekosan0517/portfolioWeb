@@ -1,59 +1,57 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
+// 1. 必要なパーツとスタイルのインポート
 import Background from '../components/Visual/Background.astro';
 import Drawer from '../components/Navigation/Drawer.astro';
-import DrawerButton from '../components/Navigation/DrawerButton.astro';
+import DrawerTrigger from '../components/Navigation/DrawerButton.astro';
+import '../styles/global.css'; // Tailwindの設定を読み込む
 
 interface Props {
-	title: string;
+	title?: string;
 	description?: string;
 }
 
-const { title, description = "Takuma Mineta's Portfolio" } = Astro.props;
+const { 
+	title = "Takuma Mineta | Portfolio", 
+	description = "Creative Archive" 
+} = Astro.props;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content={description} />
 		<title>{title}</title>
-		<ViewTransitions />
+		<meta name="description" content={description} />
 	</head>
-	<body class="bg-black text-white overflow-x-hidden font-sans">
-		
-		<Background transition:persist />
+	<body class="bg-black text-white overflow-x-hidden selection:bg-white/20">
+		<Background />
 
-		<div id="layout-root" class="relative flex min-h-screen">
-			
-			<Drawer side="left" id="drawer-left" />
+		<Drawer side="left" id="drawer-left" />
+		<Drawer side="right" id="drawer-right" />
 
-			<main id="main-content" class="relative z-10 flex-grow transition-all duration-700 ease-in-out">
-				<div class="mx-auto max-w-5xl px-6 py-20">
-					<slot />
-				</div>
-			</main>
+		<DrawerTrigger side="left" target="drawer-left" />
+		<DrawerTrigger side="right" target="drawer-right" />
 
-			<Drawer side="right" id="drawer-right" />
-
-			<DrawerButton side="left" targetId="drawer-left" />
-			<DrawerButton side="right" targetId="drawer-right" />
-		</div>
+		<main class="relative z-10 min-h-screen px-6 py-24 md:px-12 lg:px-24">
+			<div class="max-w-6xl mx-auto">
+				<slot />
+			</div>
+		</main>
 
 		<style is:global>
-			/* 共通のスクロールバー設定などはここに残す */
-			::-webkit-scrollbar { width: 6px; }
-			::-webkit-scrollbar-track { background: #000; }
-			::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-			/* ドロワー展開時の状態定義（一元管理） */
-			.is-drawer-open #main-content {
-				filter: blur(20px) brightness(0.5);
-				transform: scale(0.95);
-				pointer-events: none;
+			/* ページ全体に適用される微調整 */
+			:root {
+				color-scheme: dark;
+			}
+			html {
+				scroll-behavior: smooth;
+			}
+			body {
+				/* 背景の物理演算を見せるために、わずかに透明度を持たせる場合の設定 */
+				background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #000000 100%);
 			}
 		</style>
 	</body>

@@ -1,0 +1,109 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayouts.astro';
+
+/**
+ * 1. ページ生成パスの定義
+ */
+export async function getStaticPaths() {
+	const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
+	return allWorks.map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
+}
+
+/**
+ * 2. 型の定義と受け取り
+ * ここで明示的に型を定義することで、entry 内のデータがすべて補完されます
+ */
+interface Props {
+	entry: CollectionEntry<'works'>;
+}
+
+const { entry } = Astro.props;
+const { title, description, category, tags, url, thumbnail } = entry.data;
+---
+
+<BaseLayout title={`${title} | Works`}>
+	<article class="max-w-3xl mx-auto">
+		<header class="mb-12">
+			<div class="flex items-center gap-4 mb-6">
+				<span class="text-xs tracking-[0.3em] uppercase text-white/40 px-3 py-1 border border-white/10">
+					{category}
+				</span>
+				<div class="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+			</div>
+			<h1 class="text-5xl font-extralight tracking-tight text-white mb-8 leading-tight">
+				{title}
+			</h1>
+			<p class="text-xl text-white/50 leading-relaxed font-light italic">
+				{description}
+			</p>
+		</header>
+
+		<section class="mb-16 group">
+			<div class="aspect-video overflow-hidden bg-white/5 border border-white/10 rounded-sm">
+				{thumbnail ? (
+					<img 
+						src={thumbnail} 
+						alt={title} 
+						class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-1000"
+					/>
+				) : (
+					<div class="w-full h-full flex items-center justify-center text-white/5 uppercase tracking-[0.5em]">
+						Visual Archive Empty
+					</div>
+				)}
+			</div>
+		</section>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+			<div class="md:col-span-2">
+				<h2 class="text-sm font-bold text-white/20 uppercase tracking-widest mb-6 underline decoration-white/10 underline-offset-8">
+					Project Overview
+				</h2>
+				<div class="prose prose-invert max-w-none text-white/70 leading-loose font-light">
+					<p>
+						現在は JSON のデータを表示しています。
+						今後、この場所を Markdown で記述された詳細文へ拡張することも可能です。
+					</p>
+				</div>
+			</div>
+
+			<aside class="space-y-12">
+				<div>
+					<h2 class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4">Technologies</h2>
+					<div class="flex flex-wrap gap-2">
+						{tags.map((tag: string) => (
+							<span class="text-[10px] text-white/60 px-2 py-1 bg-white/5 border border-white/10">
+								{tag}
+							</span>
+						))}
+					</div>
+				</div>
+
+				{url && (
+					<div>
+						<h2 class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4">External Link</h2>
+						<a 
+							href={url} 
+							target="_blank" 
+							rel="noopener noreferrer"
+							class="inline-block text-xs text-white/40 hover:text-white transition-colors border-b border-white/20 hover:border-white pb-1"
+						>
+							Visit Project →
+						</a>
+					</div>
+				)}
+			</aside>
+		</div>
+
+		<footer class="mt-24 pt-12 border-t border-white/5">
+			<a href="/" class="text-xs text-white/20 hover:text-white transition-all tracking-[0.3em] uppercase">
+				← Back to Index
+			</a>
+		</footer>
+	</article>
+</BaseLayout>
