@@ -33,25 +33,25 @@ const displayWorks = (side === 'right' && activeCategory)
  * - [.is-side-open_&]:translate-x-0: bodyにクラスがついた時だけ画面内に戻す
  */
 const sideClasses = side === 'left' 
-	? 'left-0 -translate-x-full [.is-left-open_&]:translate-x-0 border-r border-white/10' 
-	: 'right-0 translate-x-full [.is-right-open_&]:translate-x-0 border-l border-white/10';
+	? 'left-0 -translate-x-full [.is-left-open_&]:translate-x-0 border-r-2 border-orange-500/35' 
+	: 'right-0 translate-x-full [.is-right-open_&]:translate-x-0 border-l-2 border-orange-500/35';
 ---
 
 <aside
 	id={id}
 	class:list={[
 		"fixed top-0 z-50 h-full w-80 max-w-[80vw] transition-transform duration-700 ease-in-out",
-		"bg-black/60 backdrop-blur-3xl shadow-2xl",
+		"bg-[var(--drawer-bg)] backdrop-blur-3xl shadow-2xl",
 		sideClasses
 	]}
 	aria-hidden="true"
 >
 	<div class="flex flex-col h-full p-8">
 		<div class="mb-12">
-			<h2 class="text-xs font-bold tracking-[0.2em] text-white/40 uppercase">
+			<h2 class="text-xs font-bold tracking-[0.2em] text-[var(--text-subtle)] uppercase">
 				{side === 'left' ? 'Navigation' : 'Works Index'}
 			</h2>
-			<p class="mt-2 text-sm text-white/20">
+			<p class="mt-2 text-sm text-[var(--text-subtle)]/70">
 				{side === 'left' ? 'Select category' : 'Explore my creations'}
 			</p>
 		</div>
@@ -61,8 +61,8 @@ const sideClasses = side === 'left'
 				{side === 'left' ? (
 					categoriesList.map((cat) => (
 						<li class="group">
-							<a href={`/category/${cat.id}`} class="text-2xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
-								<span class="w-0 h-[1px] bg-white group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
+							<a href={`/category/${cat.id}`} class="text-2xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
+								<span class="w-0 h-[2px] bg-orange-500 group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
 								{cat.label}
 							</a>
 						</li>
@@ -71,11 +71,11 @@ const sideClasses = side === 'left'
 					displayWorks.map((work) => (
 						<li class="group">
 							<a href={`/works/${work.id}`} class="block">
-								<span class="text-xs text-white/30 block mb-1 uppercase tracking-tighter">
+								<span class="text-xs text-[var(--text-subtle)] block mb-1 uppercase tracking-tighter">
 									{work.data.category}
 								</span>
-								<div class="text-xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
-									<span class="w-0 h-[1px] bg-white group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3"></span>
+								<div class="text-xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
+									<span class="w-0 h-[2px] bg-orange-500 group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3"></span>
 									{work.data.title}
 								</div>
 							</a>
@@ -85,9 +85,9 @@ const sideClasses = side === 'left'
 			</ul>
 		</nav>
 
-		<div class="mt-auto pt-6 border-t border-white/5">
+		<div class="mt-auto pt-6 border-t border-[var(--card-border)]">
 			<button 
-				class="text-xs text-white/30 hover:text-white transition-colors uppercase tracking-widest" 
+				class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors uppercase tracking-widest" 
 				onclick={`document.body.classList.remove('is-${side}-open', 'is-drawer-open')`}
 			>
 				[ Close ]
@@ -136,10 +136,3 @@ const sideClasses = side === 'left'
 	setupDrawerLinks();
 	document.addEventListener('astro:after-swap', setupDrawerLinks);
 </script>
-
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（Astro 構文、TypeScript 型解決、およびクライアントサイド動的インポート構文にエラーなし）
-- 遷移割り込み動作の検証: e.preventDefault() が正しく機能し、クラス除去によるドロワー閉じ動作が直ちにキックされ、250ms後に navigate が実行される非同期プロセスを確認
-- リスナー重複登録の防止検証: data-has-transition-listener を用いて、左側ドロワー（transition:persist で永続化）の中のリンクに対して、遷移を繰り返してもイベントリスナーが多重バインドされないことを検証
--->

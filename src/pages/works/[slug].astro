@@ -33,21 +33,21 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 	<article class="max-w-3xl mx-auto">
 		<header class="mb-12">
 			<div class="flex items-center gap-4 mb-6">
-				<span class="text-xs tracking-[0.3em] uppercase text-white/40 px-3 py-1 border border-white/10">
+				<span class="text-xs tracking-[0.3em] uppercase text-[var(--text-subtle)] px-3 py-1 border border-orange-500/20">
 					{category}
 				</span>
-				<div class="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+				<div class="h-[2px] flex-grow bg-gradient-to-r from-orange-500/40 via-[var(--text-subtle-alpha)] to-transparent"></div>
 			</div>
-			<h1 class="text-5xl font-extralight tracking-tight text-white mb-8 leading-tight">
+			<h1 class="text-5xl font-extralight tracking-tight text-[var(--text-main)] mb-8 leading-tight">
 				{title}
 			</h1>
-			<p class="text-xl text-white/50 leading-relaxed font-light italic">
+			<p class="text-xl text-[var(--text-muted)] leading-relaxed font-light italic">
 				{description}
 			</p>
 		</header>
 
 		<section class="mb-16 group">
-			<div class="aspect-video overflow-hidden bg-white/5 border border-white/10 rounded-sm">
+			<div class="aspect-video overflow-hidden bg-[var(--card-bg)] border border-orange-500/20 shadow-sm rounded-sm">
 				{thumbnail ? (
 					<img 
 						src={thumbnail} 
@@ -55,7 +55,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 						class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-1000"
 					/>
 				) : (
-					<div class="w-full h-full flex items-center justify-center text-white/5 uppercase tracking-[0.5em]">
+					<div class="w-full h-full flex items-center justify-center text-[var(--text-subtle)]/10 uppercase tracking-[0.5em]">
 						Visual Archive Empty
 					</div>
 				)}
@@ -64,10 +64,10 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
 			<div class="md:col-span-2">
-				<h2 class="text-sm font-bold text-white/20 uppercase tracking-widest mb-6 underline decoration-white/10 underline-offset-8">
+				<h2 class="text-sm font-bold text-[var(--text-subtle)] uppercase tracking-widest mb-6 underline decoration-orange-500/30 underline-offset-8">
 					Project Overview
 				</h2>
-				<div class="prose prose-invert max-w-none text-white/70 leading-loose font-light">
+				<div class="prose max-w-none text-[var(--text-muted)] leading-loose font-light">
 					<p>
 						現在は JSON データの description を表示しています。
 					</p>
@@ -76,10 +76,10 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 
 			<aside class="space-y-12">
 				<div>
-					<h2 class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4">Technologies</h2>
+					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Technologies</h2>
 					<div class="flex flex-wrap gap-2">
 						{tags.map((tag: string) => (
-							<span class="text-[10px] text-white/60 px-2 py-1 bg-white/5 border border-white/10">
+							<span class="text-[10px] text-[var(--text-muted)] px-2 py-1 bg-[var(--button-bg)] border border-orange-500/20">
 								{tag}
 							</span>
 						))}
@@ -88,12 +88,12 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 
 				{url && (
 					<div>
-						<h2 class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-4">External Link</h2>
+						<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">External Link</h2>
 						<a 
 							href={url} 
 							target="_blank" 
 							rel="noopener noreferrer"
-							class="inline-block text-xs text-white/40 hover:text-white transition-colors border-b border-white/20 hover:border-white pb-1"
+							class="inline-block text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors border-b-2 border-orange-500/40 hover:border-orange-500 pb-1"
 						>
 							Visit Project →
 						</a>
@@ -102,16 +102,10 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 			</aside>
 		</div>
 
-		<footer class="mt-24 pt-12 border-t border-white/5">
-			<a href="/" class="text-xs text-white/20 hover:text-white transition-all tracking-[0.3em] uppercase">
+		<footer class="mt-24 pt-12 border-t-2 border-orange-500/20">
+			<a href="/" class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-all tracking-[0.3em] uppercase">
 				← Back to Index
 			</a>
 		</footer>
 	</article>
 </BaseLayout>
-
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（Astro フロントマター、動的パラメータマッピング、マークアップにエラーなし）
-- コンテキスト連携: BaseLayout に対して activeCategory={category} を設定することにより、該当作品のカテゴリに合わせて右ドロワー（Works Index）のリストが自動フィルタリングされる設計になっていることを検証済み
--->

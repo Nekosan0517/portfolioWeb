@@ -29,7 +29,7 @@ const {
 		<meta name="description" content={description} />
 		<ViewTransitions />
 	</head>
-	<body class="bg-black text-white overflow-x-hidden selection:bg-white/20">
+	<body class="bg-[var(--bg-color)] text-[var(--text-main)] overflow-x-hidden selection:bg-black/10">
 		<Background transition:persist />
 
 		<Drawer side="left" id="drawer-left" transition:persist />
@@ -75,7 +75,7 @@ const {
 
 		<style is:global>
 			:root {
-				color-scheme: dark;
+				color-scheme: light;
 			}
 			html {
 				scroll-behavior: smooth;
@@ -83,8 +83,8 @@ const {
 			body {
 				background: radial-gradient(
 					circle at 50% 50%,
-					#0d0d0d 0%,
-					#000000 100%
+					#f2f0ea 0%,
+					#e0ded8 100%
 				);
 			}
 
@@ -128,10 +128,3 @@ const {
 	</body>
 </html>
 
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（Astro 構文、HTML構造、およびCSSアニメーション規則にエラーなし）
-- フェードアウト同期検証: is-fading-out クラスによるアニメーション時間 (700ms) が、ドロワーが閉じる CSS transition 時間 (700ms) と完全に一致し、同じイージングで同期することを確認
-- 遷移カクつきの検証: Astro側の退場処理 (view-transition-old) を 0ms にして無効化し、多重のフェードアウトアニメーションが競合して点滅やカクつきが発生しないよう最適化したことを検証
-- クリーンアップ検証: astro:before-preparation で is-fading-out クラスも完全にクリアすることで、履歴遷移時やロード失敗時に画面が暗いままフリーズするバグを防ぐことを検証
--->

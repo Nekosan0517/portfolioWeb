@@ -6,12 +6,23 @@
 /* サイト全体の共通スタイル */
 @layer base {
   :root {
-    --bg-color: #000;
-    --text-color: #ffffff;
+    --bg-color: #f2f0ea;
+    --bg-canvas: #e6e4dc;
+    --text-main: #121214;
+    --text-muted: #55555d;
+    --text-subtle: #888892;
+    --text-subtle-alpha: rgba(18, 18, 20, 0.08);
+    --card-bg: #ffffff;
+    --card-border: rgba(18, 18, 20, 0.06);
+    --drawer-bg: rgba(242, 240, 234, 0.8);
+    --drawer-border: rgba(255, 107, 0, 0.15);
+    --button-bg: rgba(0, 0, 0, 0.04);
+    --button-border: rgba(255, 107, 0, 0.2);
   }
 
   body {
-    @apply bg-black text-white;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     margin: 0;
     padding: 0;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -23,5 +34,5 @@
   width: 2px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
 }

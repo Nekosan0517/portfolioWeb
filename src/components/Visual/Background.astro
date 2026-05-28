@@ -2,17 +2,17 @@
 // 背景コンポーネント：物理演算＋色彩・ゆらぎアップデート版
 ---
 
-<canvas id="bg-canvas" class="fixed inset-0 -z-10 bg-[#020205]" transition:persist></canvas>
+<canvas id="bg-canvas" class="fixed inset-0 -z-10 bg-[var(--bg-canvas)]" transition:persist></canvas>
 
 <script>
     // 淡い差し色のパレット定義
     // 原色を避け、透明度を調整した「おしゃれな淡い色」を採用
     const COLOR_PALETTE = [
-        "rgba(255, 255, 255, 0.15)", // ベースの白
-        "rgba(200, 230, 255, 0.25)", // 淡いブルー（清潔感）
-        "rgba(255, 210, 210, 0.25)", // 淡いレッド（体温）
-        "rgba(255, 250, 200, 0.20)", // 淡いイエロー（光）
-        "rgba(220, 255, 220, 0.20)", // 淡いグリーン（安らぎ）
+        "rgba(0, 0, 0, 0.08)",       // 薄い黒
+        "rgba(255, 107, 0, 0.22)",   // 鮮やかなオレンジ
+        "rgba(0, 0, 0, 0.04)",       // ごく薄い黒
+        "rgba(255, 140, 40, 0.14)",  // 淡いオレンジ
+        "rgba(100, 100, 110, 0.1)",  // 薄いグレー
     ];
 
     // 多重初期化およびリーク防止のためのライフサイクル管理変数
@@ -186,9 +186,3 @@
     document.addEventListener("astro:after-swap", initCanvas);
 </script>
 
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（TypeScript の型注釈、クリーンアップロジックにエラーなし）
-- メモリリーク検証: cancelAnimationFrame と removeEventListener を実装し、ページ遷移が繰り返された場合でも、古いループや resize イベントハンドラが累積せず、唯一の実行コンテキストに保たれることを確認
-- アニメーション速度検証: requestAnimationFrame を確実に停止させて再登録するため、遷移後にパーティクルの更新（animate）が重複・加速しないことを検証
--->
