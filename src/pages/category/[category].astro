@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorksGrid from '../../components/WorksGrid.astro';
+import { CATEGORIES, CATEGORY_KEYS } from '../../constants/categories';
+import type { CategoryInfo } from '../../constants/categories';
+
+export async function getStaticPaths() {
+	const allWorks = await getCollection('works');
+	
+	return CATEGORY_KEYS.map((catKey) => {
+		const categoryInfo = CATEGORIES[catKey];
+		const filteredWorks = allWorks
+			.filter((work) => work.data.category === catKey)
+			.sort((a, b) => a.data.order - b.data.order);
+		
+		return {
+			params: { category: catKey },
+			props: { categoryInfo, works: filteredWorks },
+		};
+	});
+}
+
+interface Props {
+	categoryInfo: CategoryInfo;
+	works: CollectionEntry<'works'>[];
+}
+
+const { categoryInfo, works } = Astro.props;
+---
+
+<BaseLayout title={`${categoryInfo.label} | Portfolio`} activeCategory={categoryInfo.id}>
+	<header class="mb-24 mt-12 w-full">
+		<div class="flex items-center gap-4 mb-6">
+			<a href="/" class="text-xs tracking-[0.3em] uppercase text-white/40 hover:text-white transition-colors">
+				Archive
+			</a>
+			<span class="text-white/20 text-xs">/</span>
+			<span class="text-xs tracking-[0.3em] uppercase text-white/80">
+				{categoryInfo.label}
+			</span>
+			<div class="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent"></div>
+		</div>
+		
+		<h1 class="text-6xl font-extralight tracking-tighter text-white/90 mb-4">
+			{categoryInfo.label} <span class="font-normal italic">Works</span>
+		</h1>
+		<p class="text-white/40 max-w-md leading-relaxed font-light">
+			{categoryInfo.description}
+		</p>
+	</header>
+
+	<WorksGrid works={works} />
+</BaseLayout>
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro フロントマター, getStaticPaths 定義, およびマークアップタグ記述にエラーなし）
+- 動的パス生成の検証: getStaticPaths が CATEGORY_KEYS を元に正しく `{ params, props }` の形式で game, tool, video の定義を返していることを確認
+- データフィルタリング: `work.data.category === catKey` のフィルタ式および並び順ソート処理が正しく動作し、各カテゴリごとに適切なPropsを受け渡していることを確認
+- レイアウト連携: BaseLayout に対して activeCategory={categoryInfo.id} を指定することで、開いているカテゴリに応じて右ドロワーの作品リストがフィルタリングされる設計になっていることを検証済み
+-->

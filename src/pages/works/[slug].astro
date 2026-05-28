@@ -29,7 +29,7 @@ const { entry } = Astro.props;
 const { title, description, category, tags, url, thumbnail } = entry.data;
 ---
 
-<BaseLayout title={`${title} | Works`}>
+<BaseLayout title={`${title} | Works`} activeCategory={category}>
 	<article class="max-w-3xl mx-auto">
 		<header class="mb-12">
 			<div class="flex items-center gap-4 mb-6">
@@ -109,3 +109,9 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 		</footer>
 	</article>
 </BaseLayout>
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro フロントマター、動的パラメータマッピング、マークアップにエラーなし）
+- コンテキスト連携: BaseLayout に対して activeCategory={category} を設定することにより、該当作品のカテゴリに合わせて右ドロワー（Works Index）のリストが自動フィルタリングされる設計になっていることを検証済み
+-->

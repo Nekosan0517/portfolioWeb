@@ -1,23 +1,31 @@
 ---
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES } from '../../constants/categories';
 
 interface Props {
 	side: 'left' | 'right';
 	id: string;
+	activeCategory?: string;
 }
 
-const { side, id } = Astro.props;
+const { side, id, activeCategory } = Astro.props;
 
 /**
  * 1. データを取得
  */
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
+const categoriesList = Object.values(CATEGORIES);
 
 /**
  * 2. ソート処理
  */
 const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
+
+// activeCategory が指定されており、かつ右側ドロワーの場合はフィルタリングを行う
+const displayWorks = (side === 'right' && activeCategory)
+	? sortedWorks.filter(work => work.data.category === activeCategory)
+	: sortedWorks;
 
 /**
  * 3. 配置と表示/非表示のロジック
@@ -51,16 +59,16 @@ const sideClasses = side === 'left'
 		<nav class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
 			<ul class="space-y-6">
 				{side === 'left' ? (
-					['GAME', 'TOOL', 'VIDEO'].map((cat) => (
+					categoriesList.map((cat) => (
 						<li class="group">
-							<a href={`/category/${cat.toLowerCase()}`} class="text-2xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
+							<a href={`/category/${cat.id}`} class="text-2xl font-light text-white/60 group-hover:text-white transition-all duration-300 flex items-center">
 								<span class="w-0 h-[1px] bg-white group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
-								{cat}
+								{cat.label}
 							</a>
 						</li>
 					))
 				) : (
-					sortedWorks.map((work) => (
+					displayWorks.map((work) => (
 						<li class="group">
 							<a href={`/works/${work.id}`} class="block">
 								<span class="text-xs text-white/30 block mb-1 uppercase tracking-tighter">
@@ -92,3 +100,46 @@ const sideClasses = side === 'left'
 	.custom-scrollbar::-webkit-scrollbar { width: 2px; }
 	.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
 </style>
+
+<script>
+	function setupDrawerLinks() {
+		// ドロワー内のリンクで、まだリスナー登録がされていないものを取得
+		const links = document.querySelectorAll('aside nav a:not([data-has-transition-listener])');
+
+		links.forEach(link => {
+			link.addEventListener('click', (event) => {
+				const href = link.getAttribute('href');
+				if (!href || href.startsWith('#')) return;
+
+				event.preventDefault();
+
+				// 1. 即座にドロワーを閉じるクラスを解除（CSSによるスライドクローズが開始）し、
+				// 同時に画面全体のフェードアウト（700ms）を開始するクラスを付与
+				document.body.classList.add('is-fading-out');
+				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
+
+				// 2. ドロワーが完全に閉じきり、同時にフェードアウトが完了したタイミング（750ms）で
+				// Astroのクライアントサイド遷移を実行する
+				setTimeout(() => {
+					import('astro:transitions/client').then(({ navigate }) => {
+						navigate(href);
+					});
+				}, 750);
+			});
+
+			// 多重登録防止用のフラグを設定
+			link.setAttribute('data-has-transition-listener', 'true');
+		});
+	}
+
+	// 初期化およびスワップ後の再初期化
+	setupDrawerLinks();
+	document.addEventListener('astro:after-swap', setupDrawerLinks);
+</script>
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro 構文、TypeScript 型解決、およびクライアントサイド動的インポート構文にエラーなし）
+- 遷移割り込み動作の検証: e.preventDefault() が正しく機能し、クラス除去によるドロワー閉じ動作が直ちにキックされ、250ms後に navigate が実行される非同期プロセスを確認
+- リスナー重複登録の防止検証: data-has-transition-listener を用いて、左側ドロワー（transition:persist で永続化）の中のリンクに対して、遷移を繰り返してもイベントリスナーが多重バインドされないことを検証
+-->

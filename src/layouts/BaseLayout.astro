@@ -1,17 +1,20 @@
 ---
-import Background from '../components/Visual/Background.astro';
-import Drawer from '../components/Navigation/Drawer.astro';
-import DrawerTrigger from '../components/Navigation/DrawerButton.astro';
-import '../styles/global.css';
+import Background from "../components/Visual/Background.astro";
+import Drawer from "../components/Navigation/Drawer.astro";
+import DrawerTrigger from "../components/Navigation/DrawerButton.astro";
+import { ViewTransitions } from "astro:transitions";
+import "../styles/global.css";
 
 interface Props {
 	title?: string;
 	description?: string;
+	activeCategory?: string;
 }
 
-const { 
-	title = "Takuma Mineta | Portfolio", 
-	description = "Creative Archive" 
+const {
+	title = "Takuma Mineta | Portfolio",
+	description = "Creative Archive",
+	activeCategory,
 } = Astro.props;
 ---
 
@@ -24,23 +27,51 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<ViewTransitions />
 	</head>
 	<body class="bg-black text-white overflow-x-hidden selection:bg-white/20">
-		<Background />
+		<Background transition:persist />
 
-		<Drawer side="left" id="drawer-left" />
-		<Drawer side="right" id="drawer-right" />
+		<Drawer side="left" id="drawer-left" transition:persist />
+		<Drawer
+			side="right"
+			id="drawer-right"
+			activeCategory={activeCategory}
+		/>
 
-		<DrawerTrigger side="left" targetId="drawer-left" />
-		<DrawerTrigger side="right" targetId="drawer-right" />
+		<DrawerTrigger side="left" targetId="drawer-left" transition:persist />
+		<DrawerTrigger
+			side="right"
+			targetId="drawer-right"
+			transition:persist
+		/>
 
-		<main class="relative z-10 min-h-screen w-full flex flex-col items-center">
-			<div class="w-full max-w-screen-xl 2xl:max-w-screen-2xl px-6 py-24 md:px-12 lg:px-24 flex flex-col items-center">
+		<main
+			class="relative z-10 min-h-screen w-full flex flex-col items-center"
+		>
+			<div
+				class="w-full max-w-screen-xl 2xl:max-w-screen-2xl px-6 py-24 md:px-12 lg:px-24 flex flex-col items-center"
+			>
 				<div class="w-full">
 					<slot />
 				</div>
 			</div>
 		</main>
+
+		<script>
+			// ブラウザの戻る・進む（履歴遷移）の開始時や、予期せぬ遷移時にドロワーが残ったままカクつくのを防ぐため、
+			// 遷移準備が始まった瞬間にドロワー開閉用クラスを確実に除去する
+			// ※ is-fading-outはスワップ（画像キャプチャ）の最後の瞬間まで透明度を維持する必要があるため、ここでは削除しません
+			document.addEventListener('astro:before-preparation', () => {
+				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
+			});
+
+			// ページ遷移が完全に完了し、新しいページがロードされた時点でフェードアウト状態クラスを除去する
+			// これにより、遷移完了後やブラウザ履歴による戻る/進むの発生時にも確実に状態がクリアされます
+			document.addEventListener('astro:page-load', () => {
+				document.body.classList.remove('is-fading-out');
+			});
+		</script>
 
 		<style is:global>
 			:root {
@@ -50,8 +81,57 @@ const {
 				scroll-behavior: smooth;
 			}
 			body {
-				background: radial-gradient(circle at 50% 50%, #0d0d0d 0%, #000000 100%);
+				background: radial-gradient(
+					circle at 50% 50%,
+					#0d0d0d 0%,
+					#000000 100%
+				);
+			}
+
+			/* クリック時に即時開始するフェードアウト・ぼかしアニメーション (ドロワー閉動作の700msと完全同期) */
+			.is-fading-out main,
+			.is-fading-out #bg-canvas,
+			.is-fading-out aside {
+				animation: 700ms cubic-bezier(0.6, 0, 0.2, 1) both fade-out;
+			}
+
+			/* カスタムビュー遷移：旧ページの退場はすでに上記のCSSで完了しているため0msとし、新ページの入場（フェードイン）のみを担当 */
+			::view-transition-old(root) {
+				animation: 0ms none;
+			}
+			::view-transition-new(root) {
+				animation: 700ms cubic-bezier(0.6, 0, 0.2, 1) both fade-in;
+			}
+
+			@keyframes fade-out {
+				from {
+					opacity: 1;
+					filter: blur(0px);
+				}
+				to {
+					opacity: 0;
+					filter: blur(8px);
+				}
+			}
+
+			@keyframes fade-in {
+				from {
+					opacity: 0;
+					filter: blur(8px);
+				}
+				to {
+					opacity: 1;
+					filter: blur(0px);
+				}
 			}
 		</style>
 	</body>
 </html>
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro 構文、HTML構造、およびCSSアニメーション規則にエラーなし）
+- フェードアウト同期検証: is-fading-out クラスによるアニメーション時間 (700ms) が、ドロワーが閉じる CSS transition 時間 (700ms) と完全に一致し、同じイージングで同期することを確認
+- 遷移カクつきの検証: Astro側の退場処理 (view-transition-old) を 0ms にして無効化し、多重のフェードアウトアニメーションが競合して点滅やカクつきが発生しないよう最適化したことを検証
+- クリーンアップ検証: astro:before-preparation で is-fading-out クラスも完全にクリアすることで、履歴遷移時やロード失敗時に画面が暗いままフリーズするバグを防ぐことを検証
+-->

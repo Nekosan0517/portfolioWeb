@@ -1,0 +1,9 @@
+{
+  "title": "制作支援プラグイン",
+  "description": "開発効率を向上させるための自動化ツールおよび拡張ライブラリ。",
+  "category": "tool",
+  "thumbnail": "",
+  "tags": ["TypeScript", "Vite", "Node.js"],
+  "url": "https://example.com/helper-tool",
+  "order": 2
+}

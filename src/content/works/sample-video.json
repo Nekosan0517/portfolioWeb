@@ -1,0 +1,9 @@
+{
+  "title": "3Dモーショングラフィックス",
+  "description": "Blender と After Effects を使用した短編アニメーションのポートフォリオ映像。",
+  "category": "video",
+  "thumbnail": "",
+  "tags": ["Blender", "After Effects", "Premiere Pro"],
+  "url": "https://example.com/motion-video",
+  "order": 3
+}

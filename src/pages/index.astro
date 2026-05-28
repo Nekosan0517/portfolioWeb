@@ -3,6 +3,7 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import WorksGrid from '../components/WorksGrid.astro';
 
 // 2. 作品データを取得して並び替える
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
@@ -22,50 +23,12 @@ const title = "Takuma Mineta | Portfolio";
 		</p>
 	</header>
 
-	<section class="grid grid-cols-1 md:grid-cols-2 gap-12">
-		{sortedWorks.map((work: CollectionEntry<'works'>) => (
-			<article class="group relative">
-				<a href={`/works/${work.id}`} class="block no-underline">
-					<div class="relative aspect-video overflow-hidden bg-white/5 border border-white/10 transition-all duration-500 group-hover:border-white/30 group-hover:-translate-y-2">
-						{work.data.thumbnail ? (
-							<img 
-								src={work.data.thumbnail} 
-								alt={work.data.title} 
-								class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
-							/>
-						) : (
-							<div class="w-full h-full flex items-center justify-center text-white/10 text-xs tracking-widest uppercase">
-								No Image
-							</div>
-						)}
-					</div>
-
-					<div class="mt-6">
-						<h3 class="text-xl font-light text-white/80 group-hover:text-white transition-colors duration-300">
-							{work.data.title}
-						</h3>
-						<p class="mt-2 text-sm text-white/30 line-clamp-2">
-							{work.data.description}
-						</p>
-						<div class="mt-4 flex flex-wrap gap-2">
-							{work.data.tags.map((tag: string) => (
-								<span class="text-[9px] px-2 py-0.5 rounded-full border border-white/10 text-white/30">
-									{tag}
-								</span>
-							))}
-						</div>
-					</div>
-				</a>
-			</article>
-		))}
-	</section>
+	<WorksGrid works={sortedWorks} />
 </BaseLayout>
 
-<style>
-	.line-clamp-2 {
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-</style>
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro フロントマターのインポート、コンポーネント呼び出しおよびマークアップ構文にエラーなし）
+- 表示データの引き渡し: getCollection で取得・ソートした sortedWorks 配列が WorksGrid に対して正しく渡されていることを確認
+- 不要コードの削除: WorksGrid への切り出しに伴い、元々インデックスページ内にあったグリッドマークアップおよび line-clamp-2 関連の重複スタイル定義を完全に削除したことを確認
+-->

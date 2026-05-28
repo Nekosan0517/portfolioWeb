@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import WorkCard from './WorkCard.astro';
+
+interface Props {
+	works: CollectionEntry<'works'>[];
+}
+
+const { works } = Astro.props;
+---
+
+{works.length > 0 ? (
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
+		{works.map((work) => (
+			<WorkCard work={work} />
+		))}
+	</div>
+) : (
+	<div class="flex flex-col items-center justify-center py-24 text-center border border-white/5 bg-white/5 rounded-sm w-full">
+		<p class="text-white/40 font-light tracking-wider uppercase">No works found in this category</p>
+	</div>
+)}
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro 構文での条件分岐およびコンポーネントインポートにエラーなし）
+- 配列の空判定検証: works.length が 0 の際に、フォールバックとして「No works found...」が表示されることを検証済み
+- コンポーネント連携: 読み込まれた各 work オブジェクトが WorkCard に対して Props として正しく渡されることを検証済み
+-->

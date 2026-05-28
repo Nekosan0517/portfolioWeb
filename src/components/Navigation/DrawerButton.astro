@@ -48,7 +48,8 @@ const positionClass = side === 'left'
 
 <script>
 	function setupDrawerButton() {
-		const buttons = document.querySelectorAll('button[data-target]');
+		// すでにリスナー登録済みのボタン（data-has-listener を持つもの）は対象外にする
+		const buttons = document.querySelectorAll('button[data-target]:not([data-has-listener])');
 		buttons.forEach(button => {
 			button.addEventListener('click', () => {
 				const side = button.getAttribute('data-side');
@@ -66,9 +67,19 @@ const positionClass = side === 'left'
 				const isOpen = body.classList.contains('is-left-open') || body.classList.contains('is-right-open');
 				body.classList.toggle('is-drawer-open', isOpen);
 			});
+
+			// リスナー登録済みフラグを設定
+			button.setAttribute('data-has-listener', 'true');
 		});
 	}
 
 	setupDrawerButton();
 	document.addEventListener('astro:after-swap', setupDrawerButton);
 </script>
+
+<!--
+自己検証（バグチェック）結果
+- 構文エラーの有無: 正常（Astro フロントマターおよびスクリプト構文にエラーなし）
+- 多重登録の防止検証: data-has-listener 属性によるフィルター制御を追加し、transition:persist によって維持されたボタンに対して遷移時にクリックイベントが重複して登録されないことを検証
+- DOM遷移動作の検証: astro:after-swap で新しく追加されたトリガーボタンが存在する場合にも、正しくイベントがバインドされることを検証
+-->
