@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { formatDisplayDate } from '../utils/date';
 
 interface Props {
   work: CollectionEntry<'works'>;
@@ -8,8 +9,7 @@ interface Props {
 const { work } = Astro.props;
 const { title, thumbnail, tags, date } = work.data;
 
-const [year, month] = date.split('-');
-const displayDate = `${year}年${parseInt(month)}月`;
+const displayDate = formatDisplayDate(date);
 ---
 
 <article class="group relative" data-date={date}>

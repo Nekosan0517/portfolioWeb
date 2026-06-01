@@ -1,5 +1,6 @@
 ---
-import Drawer from "../components/Navigation/Drawer.astro";
+import NavigationDrawer from "../components/Navigation/NavigationDrawer.astro";
+import WorksIndexDrawer from "../components/Navigation/WorksIndexDrawer.astro";
 import DrawerTrigger from "../components/Navigation/DrawerButton.astro";
 import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
@@ -30,9 +31,8 @@ const {
 	</head>
 	<body class="bg-[var(--bg-color)] text-[var(--text-main)] overflow-x-hidden selection:bg-[#8EA5A5]/30">
 
-		<Drawer side="left" id="drawer-left" transition:persist />
-		<Drawer
-			side="right"
+		<NavigationDrawer id="drawer-left" transition:persist />
+		<WorksIndexDrawer
 			id="drawer-right"
 			activeCategory={activeCategory}
 		/>
@@ -57,12 +57,22 @@ const {
 		</main>
 
 		<script>
-			// 履歴遷移開始時にドロワーを強制的に閉じ、表示崩れを防ぐ (is-fading-out はトランジション完了まで維持するためここでは削除しない)
+			/**
+			 * ドロワーおよびトランジションのグローバル状態管理
+			 * 
+			 * [設計意図の機能解説]
+			 * ドロワーコンポーネント（NavigationDrawer, WorksIndexDrawer）やトリガーボタン（DrawerTrigger）は、
+			 * 直接お互いのDOMを相互に参照せず、`document.body` の classList (`is-left-open`, `is-right-open`, `is-drawer-open`) を
+			 * トグルすることで状態を仲介しています。これにより各パーツ間の結合度を下げ、カプセル化を高めています。
+			 */
+
+			// 履歴遷移（ブラウザの戻る・進む）の準備開始時に、ドロワーを強制的に閉じて表示崩れを防ぎます。
+			// （※ is-fading-out はトランジションのフェードアウトが終了するまで透明度を保つ必要があるため、ここでは消さず遷移後にリセットします）
 			document.addEventListener('astro:before-preparation', () => {
 				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
 			});
 
-			// 新しいページのロード完了時にフェードアウト状態をクリアする
+			// 新しいページのロードが完了したタイミングで、全体のフェードアウト状態クラスを確実にクリアします。
 			document.addEventListener('astro:page-load', () => {
 				document.body.classList.remove('is-fading-out');
 			});

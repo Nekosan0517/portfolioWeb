@@ -1,0 +1,111 @@
+---
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+	id: string;
+	activeCategory?: string;
+}
+
+const { id, activeCategory } = Astro.props;
+
+const allWorks: CollectionEntry<"works">[] = await getCollection("works");
+
+const sortedWorks = allWorks.sort((a, b) =>
+	b.data.date.localeCompare(a.data.date),
+);
+
+const displayWorks = activeCategory
+	? sortedWorks.filter((work) => work.data.category === activeCategory)
+	: sortedWorks;
+---
+
+<aside
+	id={id}
+	class:list={[
+		"fixed top-0 z-50 h-full w-80 max-w-[80vw] transition-transform duration-700 ease-in-out",
+		"bg-[var(--drawer-bg)] backdrop-blur-3xl shadow-2xl",
+		"right-0 translate-x-full [.is-right-open_&]:translate-x-0 border-l-2 border-[#967661]/35",
+	]}
+	aria-hidden="true"
+>
+	<div class="flex flex-col h-full p-8">
+		<div class="mb-12">
+			<h2 class="text-xs font-bold tracking-[0.2em] text-[var(--text-subtle)] uppercase">
+				Works Index
+			</h2>
+			<p class="mt-2 text-sm text-[var(--text-subtle)]/70">
+				Explore my creations
+			</p>
+		</div>
+
+		<nav class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+			<ul class="space-y-6">
+				{displayWorks.map((work) => (
+					<li class="group">
+						<a href={`/works/${work.id}`} class="block">
+							<span class="text-xs text-[var(--text-subtle)]/70 block mb-1 uppercase tracking-tighter">
+								{work.data.category}
+							</span>
+							<div class="text-xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
+								<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3" />
+								{work.data.title}
+							</div>
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<div class="mt-auto pt-6 border-t border-[var(--card-border)]">
+			<button
+				class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors uppercase tracking-widest"
+				onclick="document.body.classList.remove('is-right-open', 'is-drawer-open')"
+			>
+				[ Close ]
+			</button>
+		</div>
+	</div>
+</aside>
+
+<script>
+	/**
+	 * ドロワー内リンクのトランジション制御処理
+	 * 
+	 * [非自明ロジックの機能解説]
+	 * NavigationDrawer と同様に、Astro の SPA 遷移時のイベントリスナー多重登録を防止し、
+	 * ドロワーが閉じるアニメーション (700ms) と同期したスムーズな画面遷移を実現します。
+	 */
+	function setupDrawerLinks() {
+		const links = document.querySelectorAll(
+			"aside nav a:not([data-has-transition-listener])",
+		);
+
+		links.forEach((link) => {
+			link.addEventListener("click", (event) => {
+				const href = link.getAttribute("href");
+				if (!href || href.startsWith("#")) return;
+
+				event.preventDefault();
+
+				document.body.classList.add("is-fading-out");
+				document.body.classList.remove(
+					"is-left-open",
+					"is-right-open",
+					"is-drawer-open",
+				);
+
+				setTimeout(() => {
+					import("astro:transitions/client").then(({ navigate }) => {
+						navigate(href);
+					});
+				}, 750);
+			});
+
+			link.setAttribute("data-has-transition-listener", "true");
+		});
+	}
+
+	setupDrawerLinks();
+	document.addEventListener("astro:after-swap", setupDrawerLinks);
+</script>
