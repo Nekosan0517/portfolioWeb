@@ -62,7 +62,7 @@ const sideClasses = side === 'left'
 					categoriesList.map((cat) => (
 						<li class="group">
 							<a href={`/category/${cat.id}`} class="text-2xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
-								<span class="w-0 h-[2px] bg-[#B36C34] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
+								<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"></span>
 								{cat.label}
 							</a>
 						</li>
@@ -71,11 +71,11 @@ const sideClasses = side === 'left'
 					displayWorks.map((work) => (
 						<li class="group">
 							<a href={`/works/${work.id}`} class="block">
-								<span class="text-xs text-[var(--text-subtle)] block mb-1 uppercase tracking-tighter">
+								<span class="text-xs text-[var(--text-subtle)]/70 block mb-1 uppercase tracking-tighter">
 									{work.data.category}
 								</span>
 								<div class="text-xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
-									<span class="w-0 h-[2px] bg-[#B36C34] group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3"></span>
+									<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3"></span>
 									{work.data.title}
 								</div>
 							</a>

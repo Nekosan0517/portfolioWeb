@@ -24,7 +24,7 @@ const positionClass = side === 'left'
 	data-side={side}
 	class:list={[
 		"fixed top-1/2 z-[60] h-24 w-6 -translate-y-1/2 transition-all duration-700 ease-in-out",
-		"bg-[var(--button-bg)] hover:bg-[var(--text-subtle-alpha)] backdrop-blur-md border-2 border-[#967661]/40 hover:border-[#967661]/70",
+		"bg-[var(--button-bg)] hover:bg-[var(--text-subtle-alpha)] backdrop-blur-md border-2 border-[#967661]/40 hover:border-[#D88C51]",
 		"flex items-center justify-center group focus:outline-none",
 		positionClass
 	]}
@@ -33,7 +33,7 @@ const positionClass = side === 'left'
 	<svg 
 		xmlns="http://www.w3.org/2000/svg" 
 		class:list={[
-			"w-4 h-4 text-[var(--text-muted)] group-hover:text-[#61311C] transition-transform duration-500",
+			"w-4 h-4 text-[var(--text-muted)] group-hover:text-[#D88C51] transition-all duration-700 ease-in-out",
 			side === 'left' 
 				? "rotate-0 [.is-left-open_&]:rotate-180" 
 				: "rotate-180 [.is-right-open_&]:rotate-0"

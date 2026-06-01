@@ -15,7 +15,7 @@ const displayDate = `${year}年${parseInt(month)}月`;
 
 <article class="group relative" data-date={date}>
 	<a href={`/works/${work.id}`} class="block no-underline">
-		<div class="relative aspect-video overflow-hidden bg-[var(--card-bg)] border-2 border-[var(--card-border)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-500 group-hover:border-[#B36C34]/60 group-hover:-translate-y-2 group-hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+		<div class="relative aspect-video overflow-hidden bg-[var(--card-bg)] border-2 border-[var(--card-border)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-500 group-hover:border-[#D88C51] group-hover:-translate-y-2 group-hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
 			<!-- 日付バッジ -->
 			<div class="absolute top-3 right-3 z-10 px-2 py-0.5 bg-[var(--bg-color)]/80 backdrop-blur-sm border border-[var(--card-border)]">
 				<span class="text-[9px] tracking-[0.2em] uppercase text-[var(--text-subtle)]">{displayDate}</span>
@@ -43,7 +43,7 @@ const displayDate = `${year}年${parseInt(month)}月`;
 			</p>
 			<div class="mt-4 flex flex-wrap gap-2">
 				{tags.map((tag: string) => (
-					<span class="text-[9px] px-2 py-0.5 rounded-full border border-[#B36C34]/20 text-[var(--text-muted)] bg-[var(--button-bg)]">
+					<span class="text-[9px] px-2 py-0.5 rounded-full border border-[#D88C51]/20 text-[var(--text-muted)] bg-[var(--button-bg)]">
 						{tag}
 					</span>
 				))}
