@@ -8,7 +8,6 @@ interface Props {
 
 const { works } = Astro.props;
 
-// 年ごとにグループ化（キー: "YYYY" 文字列）
 const worksByYear = works.reduce<Record<string, CollectionEntry<'works'>[]>>((acc, work) => {
   const year = work.data.date.split('-')[0];
   if (!acc[year]) acc[year] = [];
@@ -16,14 +15,12 @@ const worksByYear = works.reduce<Record<string, CollectionEntry<'works'>[]>>((ac
   return acc;
 }, {});
 
-// サーバーサイドのデフォルト: 降順（新しい年が先頭）
 const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
 ---
 
 <div class="w-full">
   {works.length > 0 ? (
     <>
-      <!-- ソートコントロールバー（-mt-16でヘッダー mb-24 の余白内に引き上げ、案Aに視覚的に近づける） -->
       <div class="flex justify-end items-center gap-2 mb-10 -mt-16">
         <button id="sort-desc" class="sort-btn is-active" data-sort="desc" aria-pressed="true">
           ↓ 新しい順
@@ -36,7 +33,6 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
       <div id="works-container" class="w-full space-y-16">
         {sortedYears.map(year => (
           <div data-year-group={year}>
-            <!-- 年セクションヘッダー: YYYY年 ────────────────── -->
             <div class="flex items-center gap-5 mb-10">
               <span class="text-xs tracking-[0.5em] text-[var(--text-main)] font-light whitespace-nowrap">
                 {year}年
@@ -44,7 +40,6 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
               <div class="h-px flex-grow bg-[#B36C34]/50"></div>
             </div>
 
-            <!-- 年内カードグリッド -->
             <div class="works-year-grid grid grid-cols-1 md:grid-cols-2 gap-12">
               {worksByYear[year].map(work => (
                 <WorkCard work={work} />
@@ -103,7 +98,6 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
         btn.classList.add('is-active');
         btn.setAttribute('aria-pressed', 'true');
 
-        // 年グループ単位でソート（年グループヘッダーと中身を一体で並び替え）
         const groups = [...container.querySelectorAll<HTMLElement>('[data-year-group]')];
         groups.sort((a, b) => {
           const ya = a.dataset.yearGroup ?? '';
@@ -111,7 +105,6 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
           return sortOrder === 'desc' ? yb.localeCompare(ya) : ya.localeCompare(yb);
         });
 
-        // 各年グループ内のカードも同方向にソート
         groups.forEach(group => {
           const grid = group.querySelector<HTMLElement>('.works-year-grid');
           if (grid) {
@@ -129,7 +122,6 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
     });
   }
 
-  // 初期化と View Transitions 後の再初期化
   setupSortButtons();
   document.addEventListener('astro:after-swap', setupSortButtons);
 </script>

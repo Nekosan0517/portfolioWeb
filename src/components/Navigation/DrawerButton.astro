@@ -1,5 +1,4 @@
 ---
-// Propsの定義: どちらの端に置くか、どのIDのドロワーを操作するかを受け取る
 interface Props {
 	side: 'left' | 'right';
 	targetId: string;
@@ -7,12 +6,6 @@ interface Props {
 
 const { side, targetId } = Astro.props;
 
-/**
- * 配置と連動移動のロジック
- * - left-0 / right-0: 初期位置
- * - [.is-left-open_&]:translate-x-80: 左ドロワーが開いた時、右に80(20rem)移動
- * - [.is-right-open_&]:-translate-x-80: 右ドロワーが開いた時、左に80(20rem)移動
- */
 const positionClass = side === 'left' 
 	? 'left-0 rounded-r-full border-l-0 [.is-left-open_&]:translate-x-80' 
 	: 'right-0 rounded-l-full border-r-0 [.is-right-open_&]:-translate-x-80';

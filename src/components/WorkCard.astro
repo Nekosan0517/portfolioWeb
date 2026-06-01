@@ -8,7 +8,6 @@ interface Props {
 const { work } = Astro.props;
 const { title, thumbnail, tags, date } = work.data;
 
-// "YYYY-MM" → "YYYY年M月" に整形（先頭ゼロ除去）
 const [year, month] = date.split('-');
 const displayDate = `${year}年${parseInt(month)}月`;
 ---
@@ -49,6 +48,3 @@ const displayDate = `${year}年${parseInt(month)}月`;
 		</div>
 	</a>
 </article>
-
-<style>
-</style>

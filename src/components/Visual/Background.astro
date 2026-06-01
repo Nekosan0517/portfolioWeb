@@ -1,17 +1,15 @@
 ---
-// 背景コンポーネント：物理演算＋色彩・ゆらぎアップデート版
 ---
 
 <canvas id="bg-canvas" class="fixed inset-0 -z-10 bg-[var(--bg-canvas)]" transition:persist></canvas>
 
 <script>
-    // 粒子の色設定（色をより明瞭で濃く設定）
     const COLOR_PALETTE = [
-        "rgba(97, 49, 28, 0.1)",    // ダークブラウン
-        "rgba(179, 108, 52, 0.18)",  // ウォームオレンジ（線色）
-        "rgba(150, 118, 97, 0.2)", // ミディアムブラウン（アクセント）
-        "rgba(97, 49, 28, 0.06)",   // 薄いブラウン
-        "rgba(179, 108, 52, 0.10)",  // 淡いオレンジ
+        "rgba(97, 49, 28, 0.1)",
+        "rgba(179, 108, 52, 0.18)",
+        "rgba(150, 118, 97, 0.2)",
+        "rgba(97, 49, 28, 0.06)",
+        "rgba(179, 108, 52, 0.10)",
     ];
 
     let animationFrameId: number | null = null;
@@ -27,12 +25,10 @@
         private vy: number = 0;
         private vz: number = 0;
 
-        // 基底速度
         private baseVx: number = 0;
         private baseVy: number = 0;
         private baseVz: number = 0;
 
-        // 寿命管理
         private age: number = 0;
         private maxLife: number = 0;
 
@@ -53,10 +49,8 @@
             this.y = (Math.random() - 0.5) * this.canvas.height;
             
             if (isRespawn) {
-                // リスポーン時は画面の手前側から発生させる
                 this.z = -250 + Math.random() * 100;
             } else {
-                // 初回は画面全体に分散して配置
                 this.z = (Math.random() - 0.5) * 400;
             }
 
@@ -99,19 +93,15 @@
                 return;
             }
 
-            // 風の影響
             this.vx += windForce * (0.8 + Math.random() * 0.4);
             this.vz += windForce * (Math.random() - 0.5) * 0.15;
 
-            // スクロールの影響
             this.vy += scrollDelta * 0.04;
 
-            // ゆらぎ
             this.wiggles += this.wiggleSpeed;
             this.vx += Math.sin(this.wiggles) * 0.05;
             this.vy += Math.cos(this.wiggles) * 0.02;
 
-            // 摩擦と基底速度へのスムーズな復帰
             const k = 0.04;
             this.vx = this.vx * (1 - k) + this.baseVx * k;
             this.vy = this.vy * (1 - k) + this.baseVy * k;

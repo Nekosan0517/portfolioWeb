@@ -59,15 +59,12 @@ const {
 		</main>
 
 		<script>
-			// ブラウザの戻る・進む（履歴遷移）の開始時や、予期せぬ遷移時にドロワーが残ったままカクつくのを防ぐため、
-			// 遷移準備が始まった瞬間にドロワー開閉用クラスを確実に除去する
-			// ※ is-fading-outはスワップ（画像キャプチャ）の最後の瞬間まで透明度を維持する必要があるため、ここでは削除しません
+			// 履歴遷移開始時にドロワーを強制的に閉じ、表示崩れを防ぐ (is-fading-out はトランジション完了まで維持するためここでは削除しない)
 			document.addEventListener('astro:before-preparation', () => {
 				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
 			});
 
-			// ページ遷移が完全に完了し、新しいページがロードされた時点でフェードアウト状態クラスを除去する
-			// これにより、遷移完了後やブラウザ履歴による戻る/進むの発生時にも確実に状態がクリアされます
+			// 新しいページのロード完了時にフェードアウト状態をクリアする
 			document.addEventListener('astro:page-load', () => {
 				document.body.classList.remove('is-fading-out');
 			});

@@ -1,15 +1,12 @@
 ---
-// 1. 必要な部品をインポートする
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorksGrid from '../components/WorksGrid.astro';
 
-// 2. 作品データを取得して並び替える
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
 const sortedWorks = allWorks.sort((a, b) => b.data.date.localeCompare(a.data.date));
 
-// 3. ページの設定
 const title = "Takuma Mineta | Portfolio";
 ---
 
@@ -25,10 +22,3 @@ const title = "Takuma Mineta | Portfolio";
 
 	<WorksGrid works={sortedWorks} />
 </BaseLayout>
-
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（Astro フロントマターのインポート、コンポーネント呼び出しおよびマークアップ構文にエラーなし）
-- 表示データの引き渡し: getCollection で取得・ソートした sortedWorks 配列が WorksGrid に対して正しく渡されていることを確認
-- 不要コードの削除: WorksGrid への切り出しに伴い、元々インデックスページ内にあったグリッドマークアップおよび line-clamp-2 関連の重複スタイル定義を完全に削除したことを確認
--->

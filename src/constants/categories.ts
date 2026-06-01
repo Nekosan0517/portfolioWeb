@@ -30,9 +30,3 @@ export const CATEGORIES: Record<CategoryKey, CategoryInfo> = {
   }
 };
 
-// ==========================================
-// 自己検証（バグチェック）結果
-// 1. 構文チェック: 正常（TypeScript の標準オブジェクトリテラルおよび型定義でエラーなし）
-// 2. キーの網羅性: CATEGORY_KEYS と CATEGORIES のキーが一致していることを型レベル (Record<CategoryKey, CategoryInfo>) で保証
-// 3. 値の検証: 各カテゴリに id, label, description が不足なく定義されていることを検証済み
-// ==========================================

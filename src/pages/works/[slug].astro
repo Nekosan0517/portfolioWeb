@@ -3,22 +3,15 @@ import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-/**
- * 1. ページ生成パスの定義
- */
 export async function getStaticPaths() {
 	const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
 	
 	return allWorks.map((entry) => ({
-		// type: 'data' では entry.slug ではなく entry.id を使用
 		params: { slug: entry.id },
 		props: { entry },
 	}));
 }
 
-/**
- * 2. 型の定義と受け取り
- */
 interface Props {
 	entry: CollectionEntry<'works'>;
 }
@@ -26,11 +19,9 @@ interface Props {
 const { entry } = Astro.props;
 const { title, descriptions, category, tags, url, thumbnail, date, photos } = entry.data;
 
-// "YYYY-MM" → "YYYY年M月" に整形（先頭ゼロ除去）
 const [year, month] = date.split('-');
 const displayDate = `${year}年${parseInt(month)}月`;
 
-// カテゴリの頭文字を大文字にして表示用にする (例: game -> Game)
 const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
@@ -82,7 +73,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				</div>
 			</div>
 
-			<!-- サイドバー: Date → Tools → External Link の順 -->
 			<aside class="space-y-12">
 				<div>
 					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Date</h2>
@@ -116,7 +106,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			</aside>
 		</div>
 
-		<!-- [Photos] アコーディオン & カルーセル -->
 		{photos && photos.length > 0 && (
 			<section class="mt-16">
 				<details class="group-accordion border-y border-[#B36C34]/20 py-6">
@@ -204,14 +193,12 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 		let isAnimating = false;
 
-		// 既存のクローンを削除して初期状態に戻す (AstroのSPA遷移などで複数回呼び出される場合の二重クローン防止)
 		const existingClones = viewport.querySelectorAll('.is-clone');
 		existingClones.forEach((clone) => clone.remove());
 
 		const items = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
 		const total = items.length;
 
-		// カルーセルの動作が必要かどうかの判定 (画像が2枚以上の場合のみ)
 		const hasCarousel = total > 1;
 
 		let currentIndex = 1;
@@ -241,7 +228,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			viewport.insertBefore(lastClone, items[0]);
 			viewport.appendChild(firstClone);
 
-			// クローン挿入後の全アイテムリストを更新
 			allItems = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
 		}
 
@@ -280,7 +266,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 						content.removeEventListener('transitionend', onTransitionEnd);
 						
 						if (hasCarousel) {
-							// アコーディオン展開完了後に正しい初期位置にスクロール
 							scrollToCurrentIndex(false);
 							updateState();
 						}
@@ -290,11 +275,9 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			}
 		});
 
-		// カルーセル機能の設定 (画像が2枚以上の場合のみ)
 		if (hasCarousel && prevBtn && nextBtn) {
 			const dots = accordion.querySelectorAll('.indicator-dot');
 
-			// 画像が1枚以下の場合はボタンを非表示
 			if (dots.length <= 1) {
 				prevBtn.style.display = 'none';
 				nextBtn.style.display = 'none';
@@ -302,12 +285,10 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 			let isScrolling = false;
 
-			// カスタムイージング付きスクロール関数
 			const smoothScrollTo = (targetIndex: number, duration: number) => {
 				if (isScrolling) return;
 				isScrolling = true;
 
-				// スナップスクロールとの競合を防ぐため一時的に無効化
 				viewport.style.scrollSnapType = 'none';
 
 				const startLeft = viewport.scrollLeft;
@@ -322,7 +303,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				const change = targetLeft - startLeft;
 				const startTime = performance.now();
 
-				// イージング関数 (easeInOutQuad)
 				const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 				const animateScroll = (currentTime: number) => {
@@ -365,7 +345,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			const updateState = () => {
 				const scrollLeft = viewport.scrollLeft;
 				
-				// スクロール位置に最も近いアイテムを特定
 				let closestIndex = currentIndex;
 				let minDiff = Infinity;
 				allItems.forEach((item, idx) => {
@@ -376,7 +355,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 					}
 				});
 
-				// インジケーター用の本物のインデックスを計算
 				let realIndex = 0;
 				if (closestIndex === 0) {
 					realIndex = total - 1;
@@ -433,7 +411,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				smoothScrollTo(currentIndex + 1, 750);
 			});
 
-			// ドットクリックで該当スライドにスクロール
 			dots.forEach((dot) => {
 				dot.addEventListener('click', () => {
 					if (isScrolling) return;
@@ -453,7 +430,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 			viewport.addEventListener('scrollend', handleScrollEnd);
 
-			// 初期化時点でアコーディオンが開いていれば初期位置へスクロール
 			if (accordion.hasAttribute('open')) {
 				scrollToCurrentIndex(false);
 				updateState();
@@ -469,7 +445,6 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			});
 			resizeObserver.observe(viewport);
 		} else {
-			// 画像が1枚だけの場合は、ナビゲーションボタンを非表示
 			if (prevBtn) prevBtn.style.display = 'none';
 			if (nextBtn) nextBtn.style.display = 'none';
 		}

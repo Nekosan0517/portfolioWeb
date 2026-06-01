@@ -11,30 +11,18 @@ interface Props {
 
 const { side, id, activeCategory } = Astro.props;
 
-/**
- * 1. データを取得
- */
 const allWorks: CollectionEntry<"works">[] = await getCollection("works");
 const categoriesList = Object.values(CATEGORIES);
 
-/**
- * 2. ソート処理
- */
 const sortedWorks = allWorks.sort((a, b) =>
 	b.data.date.localeCompare(a.data.date),
 );
 
-// activeCategory が指定されており、かつ右側ドロワーの場合はフィルタリングを行う
 const displayWorks =
 	side === "right" && activeCategory
 		? sortedWorks.filter((work) => work.data.category === activeCategory)
 		: sortedWorks;
 
-/**
- * 3. 配置と表示/非表示のロジック
- * - translate-x-full: 画面の右/左外に配置
- * - [.is-side-open_&]:translate-x-0: bodyにクラスがついた時だけ画面内に戻す
- */
 const sideClasses =
 	side === "left"
 		? "left-0 -translate-x-full [.is-left-open_&]:translate-x-0 border-r-2 border-[#967661]/35"
@@ -118,14 +106,8 @@ const sideClasses =
 	</div>
 </aside>
 
-<style>
-	.custom-scrollbar::-webkit-scrollbar {
-		width: 2px;
-	}
-	.custom-scrollbar::-webkit-scrollbar-thumb {
-		background: rgba(255, 255, 255, 0.1);
-	}
-</style>
+
+
 
 <script>
 	function setupDrawerLinks() {
