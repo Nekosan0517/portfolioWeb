@@ -1,0 +1,25 @@
+{
+  "title": "自然の息吹",
+  "descriptions": [
+    "四季折々の自然の表情を切り取った写真集プロジェクト。",
+    "光と影のコントラストを意識し、静寂の中に潜む生命力を表現しました。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/sample_photo_1.png",
+      "caption": "新緑の森に差し込む木漏れ日"
+    },
+    {
+      "url": "/images/works/sample_photo_2.png",
+      "caption": "夕暮れ時の湖畔の静寂"
+    }
+  ],
+  "category": "photo",
+  "thumbnail": "/images/works/sample_photo_1.png",
+  "tags": [
+    "写真",
+    "風景",
+    "ポートフォリオ"
+  ],
+  "date": "2024-05"
+}

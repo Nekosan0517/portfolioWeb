@@ -49,25 +49,23 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				</span>
 				<div class="h-[2px] flex-grow bg-gradient-to-r from-[#B36C34]/50 via-[var(--text-subtle-alpha)] to-transparent"></div>
 			</div>
-			<h1 class="text-5xl font-extralight tracking-tight text-[var(--text-main)] mb-8 leading-tight">
+			<h1 class="text-6xl font-extralight tracking-tight text-[var(--text-main)] mb-8 leading-tight">
 				{title}
 			</h1>
 		</header>
 
-		<section class="mb-16 group">
-			<div class="aspect-video overflow-hidden bg-[var(--card-bg)] border border-[#B36C34]/20 shadow-sm rounded-sm">
-				{thumbnail ? (
-					<img 
-						src={thumbnail} 
-						alt={title} 
-						class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-1000"
-					/>
-				) : (
-					<div class="w-full h-full flex items-center justify-center text-[var(--text-subtle)]/10 uppercase tracking-[0.5em]">
-						Visual Archive Empty
-					</div>
-				)}
-			</div>
+		<section class="mb-16 flex justify-center">
+			{thumbnail ? (
+				<img 
+					src={thumbnail} 
+					alt={title} 
+					class="max-w-full max-h-[600px] object-contain border border-[#B36C34]/20 shadow-sm rounded-sm"
+				/>
+			) : (
+				<div class="aspect-video w-full flex items-center justify-center bg-[var(--card-bg)] border border-[#B36C34]/20 shadow-sm rounded-sm text-[var(--text-subtle)]/10 uppercase tracking-[0.5em]">
+					Visual Archive Empty
+				</div>
+			)}
 		</section>
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -75,7 +73,7 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				<h2 class="text-sm font-bold text-[var(--text-subtle)] uppercase tracking-widest mb-6 underline decoration-[#B36C34]/30 underline-offset-8">
 					Project Overview
 				</h2>
-				<div class="prose max-w-none text-[var(--text-muted)] leading-loose font-light">
+				<div class="prose max-w-none text-xl text-[var(--text-muted)] leading-loose font-light">
 					{descriptions.map((desc: string) => (
 						<p class="mb-6 last:mb-0">
 							{desc}
@@ -140,11 +138,11 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 									<div class="carousel-viewport w-full flex gap-6 overflow-x-auto py-2">
 										{photos.map((photo, index) => (
 											<div class="carousel-item flex-none w-full flex flex-col items-center justify-center">
-												<div class="aspect-video w-full max-h-[480px] bg-[var(--card-bg)] border border-[#B36C34]/10 rounded-sm overflow-hidden flex items-center justify-center relative">
+												<div class="w-full h-[480px] flex items-center justify-center relative">
 													<img
 														src={photo.url}
 														alt={photo.caption || `Photo ${index + 1}`}
-														class="max-w-full max-h-full object-contain opacity-80 hover:opacity-100 transition-opacity duration-500"
+														class="max-w-full max-h-full object-contain border border-[#B36C34]/10 rounded-sm shadow-sm bg-[var(--card-bg)]"
 														onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
 													/>
 													<div class="hidden absolute inset-0 flex items-center justify-center text-[var(--text-subtle)]/20 uppercase tracking-[0.3em] text-[10px]">
@@ -212,22 +210,15 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 		const items = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
 		const total = items.length;
-		if (total <= 1) return;
 
-		// 両端にクローンを作成して挿入（無限ループ用）
-		const firstClone = items[0].cloneNode(true) as HTMLElement;
-		const lastClone = items[total - 1].cloneNode(true) as HTMLElement;
-		firstClone.classList.add('is-clone');
-		lastClone.classList.add('is-clone');
+		// カルーセルの動作が必要かどうかの判定 (画像が2枚以上の場合のみ)
+		const hasCarousel = total > 1;
 
-		viewport.insertBefore(lastClone, items[0]);
-		viewport.appendChild(firstClone);
-
-		// クローン挿入後の全アイテムリスト
-		const allItems = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
 		let currentIndex = 1;
+		let allItems = items;
 
 		const scrollToCurrentIndex = (smooth = false) => {
+			if (!hasCarousel) return;
 			const targetItem = allItems[currentIndex];
 			if (!targetItem) return;
 			
@@ -240,6 +231,21 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			}
 		};
 
+		if (hasCarousel) {
+			// 両端にクローンを作成して挿入（無限ループ用）
+			const firstClone = items[0].cloneNode(true) as HTMLElement;
+			const lastClone = items[total - 1].cloneNode(true) as HTMLElement;
+			firstClone.classList.add('is-clone');
+			lastClone.classList.add('is-clone');
+
+			viewport.insertBefore(lastClone, items[0]);
+			viewport.appendChild(firstClone);
+
+			// クローン挿入後の全アイテムリストを更新
+			allItems = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
+		}
+
+		// アコーディオンの開閉処理 (画像数に関わらず実行)
 		summary.addEventListener('click', (e) => {
 			e.preventDefault();
 			if (isAnimating) return;
@@ -273,16 +279,19 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 						isAnimating = false;
 						content.removeEventListener('transitionend', onTransitionEnd);
 						
-						// アコーディオン展開完了後に正しい初期位置にスクロール
-						scrollToCurrentIndex(false);
-						updateState();
+						if (hasCarousel) {
+							// アコーディオン展開完了後に正しい初期位置にスクロール
+							scrollToCurrentIndex(false);
+							updateState();
+						}
 					}
 				};
 				content.addEventListener('transitionend', onTransitionEnd);
 			}
 		});
 
-		if (prevBtn && nextBtn) {
+		// カルーセル機能の設定 (画像が2枚以上の場合のみ)
+		if (hasCarousel && prevBtn && nextBtn) {
 			const dots = accordion.querySelectorAll('.indicator-dot');
 
 			// 画像が1枚以下の場合はボタンを非表示
@@ -313,7 +322,7 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				const change = targetLeft - startLeft;
 				const startTime = performance.now();
 
-				// イージング関数 (easeInOutQuad: 二次関数による滑らかな加減速、適度なメリハリ)
+				// イージング関数 (easeInOutQuad)
 				const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 				const animateScroll = (currentTime: number) => {
@@ -343,11 +352,11 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 			const handleLoopWrap = () => {
 				if (currentIndex === 0) {
-					// 先頭のクローン（最後の画像）に達した -> 本物の最後の画像へワープ
+					// 先頭のクローンに達した -> 本物の最後の画像へワープ
 					currentIndex = total;
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
 				} else if (currentIndex === total + 1) {
-					// 末尾のクローン（最初の画像）に達した -> 本物の最初の画像へワープ
+					// 末尾のクローンに達した -> 本物の最初の画像へワープ
 					currentIndex = 1;
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
 				}
@@ -459,6 +468,10 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 				}
 			});
 			resizeObserver.observe(viewport);
+		} else {
+			// 画像が1枚だけの場合は、ナビゲーションボタンを非表示
+			if (prevBtn) prevBtn.style.display = 'none';
+			if (nextBtn) nextBtn.style.display = 'none';
 		}
 	};
 

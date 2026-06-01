@@ -21,7 +21,7 @@ const worksCollection = defineCollection({
       })
     ).optional(),
     // カテゴリを限定することで、入力ミスを防ぎます
-    category: z.enum(['game', 'tool', 'video']),
+    category: z.enum(['game', 'tool', 'video', 'photo']),
     // サムネイル画像（任意項目：optional）
     thumbnail: z.string().optional(),
     // 関連タグの配列（例：["TypeScript", "Unity"]）
