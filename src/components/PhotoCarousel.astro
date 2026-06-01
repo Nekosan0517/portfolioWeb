@@ -86,6 +86,7 @@ const { photos } = Astro.props;
 		if (!summary || !content || !viewport) return;
 
 		let isAnimating = false;
+		let isScrolling = false;
 
 		// [非自明ロジックの機能解説]
 		// AstroのSPA遷移（ViewTransitions）などによるスクリプト再実行時、
@@ -100,6 +101,110 @@ const { photos } = Astro.props;
 
 		let currentIndex = 1;
 		let allItems = items;
+
+		// インジケータードット全要素の取得処理
+		const dots = accordion.querySelectorAll('.indicator-dot');
+
+		// [非自明ロジックの機能解説]
+		// インデックスがクローン要素（両端）に到達した瞬間、スクロールアニメーションなしで
+		// 反対側の本物スライドへ位置をジャンプさせ、シームレスな無限ループを実現します。
+		// クローン到達時のシームレスなループワープ処理
+		const handleLoopWrap = () => {
+			if (currentIndex === 0) {
+				currentIndex = total;
+				viewport.scrollLeft = allItems[currentIndex].offsetLeft;
+			} else if (currentIndex === total + 1) {
+				currentIndex = 1;
+				viewport.scrollLeft = allItems[currentIndex].offsetLeft;
+			}
+		};
+
+		// アクティブインジケータードットの表示更新処理
+		const updateState = () => {
+			if (!hasCarousel) return;
+			const scrollLeft = viewport.scrollLeft;
+			
+			let closestIndex = currentIndex;
+			let minDiff = Infinity;
+			// スクロール位置と各スライドの距離比較処理
+			allItems.forEach((item, idx) => {
+				const diff = Math.abs(item.offsetLeft - scrollLeft);
+				if (diff < minDiff) {
+					minDiff = diff;
+					closestIndex = idx;
+				}
+			});
+
+			let realIndex = 0;
+			if (closestIndex === 0) {
+				realIndex = total - 1;
+			} else if (closestIndex === total + 1) {
+				realIndex = 0;
+			} else {
+				realIndex = closestIndex - 1;
+			}
+
+			// ドット状態（アクティブクラス）の切り替え処理
+			dots.forEach((dot, idx) => {
+				if (idx === realIndex) {
+					dot.classList.add('is-active');
+				} else {
+					dot.classList.remove('is-active');
+				}
+			});
+		};
+
+		// [非自明ロジックの機能解説]
+		// CSSの scroll-snap-type が有効な状態でのなめらかなイージングスクロール中の
+		// カクつきを防ぐため、移動中はスナップを一時的に無効化 (none) とし、完了後に復元。
+		// イージングを適用したなめらかなスクロール処理
+		const smoothScrollTo = (targetIndex: number, duration: number) => {
+			if (!hasCarousel || isScrolling) return;
+			isScrolling = true;
+
+			viewport.style.scrollSnapType = 'none';
+
+			const startLeft = viewport.scrollLeft;
+			const targetItem = allItems[targetIndex];
+			if (!targetItem) {
+				isScrolling = false;
+				viewport.style.scrollSnapType = 'x mandatory';
+				return;
+			}
+
+			const targetLeft = targetItem.offsetLeft;
+			const change = targetLeft - startLeft;
+			const startTime = performance.now();
+
+			const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+			// アニメーション進捗に応じたスクロール位置更新処理
+			const animateScroll = (currentTime: number) => {
+				const elapsed = currentTime - startTime;
+				const progress = Math.min(elapsed / duration, 1);
+				
+				viewport.scrollLeft = startLeft + change * easeInOutQuad(progress);
+
+				if (progress < 1) {
+					// 次フレームのアニメーション描画要求処理
+					requestAnimationFrame(animateScroll);
+				} else {
+					viewport.scrollLeft = targetLeft;
+					currentIndex = targetIndex;
+					
+					// クローン到達時のループワープ処理の実行
+					handleLoopWrap();
+					
+					viewport.style.scrollSnapType = 'x mandatory';
+					isScrolling = false;
+					// アクティブ状態の更新処理の実行
+					updateState();
+				}
+			};
+
+			// アニメーション描画要求処理
+			requestAnimationFrame(animateScroll);
+		};
 
 		// カルーセルのカレント位置へのスクロール制御処理
 		const scrollToCurrentIndex = (smooth = false) => {
@@ -187,146 +292,41 @@ const { photos } = Astro.props;
 			}
 		});
 
-		if (hasCarousel && prevBtn && nextBtn) {
-			// インジケータードット全要素の取得処理
-			const dots = accordion.querySelectorAll('.indicator-dot');
+		// スクロール終了検知時の座標補正処理
+		const handleScrollEnd = () => {
+			if (!hasCarousel || isScrolling) return;
 
+			const scrollLeft = viewport.scrollLeft;
+			let closestIndex = currentIndex;
+			let minDiff = Infinity;
+			// スクロール停止位置に最も近いスライドの検索処理
+			allItems.forEach((item, idx) => {
+				const diff = Math.abs(item.offsetLeft - scrollLeft);
+				if (diff < minDiff) {
+					minDiff = diff;
+					closestIndex = idx;
+				}
+			});
+
+			currentIndex = closestIndex;
+
+			if (currentIndex === 0) {
+				currentIndex = total;
+				viewport.scrollLeft = allItems[currentIndex].offsetLeft;
+			} else if (currentIndex === total + 1) {
+				currentIndex = 1;
+				viewport.scrollLeft = allItems[currentIndex].offsetLeft;
+			}
+
+			// インジケーターのアクティブ表示更新処理
+			updateState();
+		};
+
+		if (hasCarousel && prevBtn && nextBtn) {
 			if (dots.length <= 1) {
 				prevBtn.style.display = 'none';
 				nextBtn.style.display = 'none';
 			}
-
-			let isScrolling = false;
-
-			// [非自明ロジックの機能解説]
-			// CSSの scroll-snap-type が有効な状態でのなめらかなイージングスクロール中の
-			// カクつきを防ぐため、移動中はスナップを一時的に無効化 (none) とし、完了後に復元。
-			// イージングを適用したなめらかなスクロール処理
-			const smoothScrollTo = (targetIndex: number, duration: number) => {
-				if (isScrolling) return;
-				isScrolling = true;
-
-				viewport.style.scrollSnapType = 'none';
-
-				const startLeft = viewport.scrollLeft;
-				const targetItem = allItems[targetIndex];
-				if (!targetItem) {
-					isScrolling = false;
-					viewport.style.scrollSnapType = 'x mandatory';
-					return;
-				}
-
-				const targetLeft = targetItem.offsetLeft;
-				const change = targetLeft - startLeft;
-				const startTime = performance.now();
-
-				const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-
-				// アニメーション進捗に応じたスクロール位置更新処理
-				const animateScroll = (currentTime: number) => {
-					const elapsed = currentTime - startTime;
-					const progress = Math.min(elapsed / duration, 1);
-					
-					viewport.scrollLeft = startLeft + change * easeInOutQuad(progress);
-
-					if (progress < 1) {
-						// 次フレームのアニメーション描画要求処理
-						requestAnimationFrame(animateScroll);
-					} else {
-						viewport.scrollLeft = targetLeft;
-						currentIndex = targetIndex;
-						
-						// クローン到達時のループワープ処理の実行
-						handleLoopWrap();
-						
-						viewport.style.scrollSnapType = 'x mandatory';
-						isScrolling = false;
-						// アクティブ状態の更新処理の実行
-						updateState();
-					}
-				};
-
-				// アニメーション描画要求処理
-				requestAnimationFrame(animateScroll);
-			};
-
-			// [非自明ロジックの機能解説]
-			// インデックスがクローン要素（両端）に到達した瞬間、スクロールアニメーションなしで
-			// 反対側の本物スライドへ位置をジャンプさせ、シームレスな無限ループを実現します。
-			// クローン到達時のシームレスなループワープ処理
-			const handleLoopWrap = () => {
-				if (currentIndex === 0) {
-					currentIndex = total;
-					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
-				} else if (currentIndex === total + 1) {
-					currentIndex = 1;
-					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
-				}
-			};
-
-			// アクティブインジケータードットの表示更新処理
-			const updateState = () => {
-				const scrollLeft = viewport.scrollLeft;
-				
-				let closestIndex = currentIndex;
-				let minDiff = Infinity;
-				// スクロール位置と各スライドの距離比較処理
-				allItems.forEach((item, idx) => {
-					const diff = Math.abs(item.offsetLeft - scrollLeft);
-					if (diff < minDiff) {
-						minDiff = diff;
-						closestIndex = idx;
-					}
-				});
-
-				let realIndex = 0;
-				if (closestIndex === 0) {
-					realIndex = total - 1;
-				} else if (closestIndex === total + 1) {
-					realIndex = 0;
-				} else {
-					realIndex = closestIndex - 1;
-				}
-
-				// ドット状態（アクティブクラス）の切り替え処理
-				dots.forEach((dot, idx) => {
-					if (idx === realIndex) {
-						dot.classList.add('is-active');
-					} else {
-						dot.classList.remove('is-active');
-					}
-				});
-			};
-
-			// スクロール終了検知時の座標補正処理
-			const handleScrollEnd = () => {
-				if (isScrolling) return;
-
-				const scrollLeft = viewport.scrollLeft;
-				let closestIndex = currentIndex;
-				let minDiff = Infinity;
-				// スクロール停止位置に最も近いスライドの検索処理
-				allItems.forEach((item, idx) => {
-					const diff = Math.abs(item.offsetLeft - scrollLeft);
-					if (diff < minDiff) {
-						minDiff = diff;
-						closestIndex = idx;
-					}
-				});
-
-				currentIndex = closestIndex;
-
-				if (currentIndex === 0) {
-					currentIndex = total;
-					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
-				} else if (currentIndex === total + 1) {
-					currentIndex = 1;
-					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
-				}
-
-				// インジケーターのアクティブ表示更新処理
-				updateState();
-			};
 
 			// 前へボタンのクリックイベント登録処理
 			prevBtn.addEventListener('click', () => {
