@@ -1,5 +1,4 @@
 ---
-import Background from "../components/Visual/Background.astro";
 import Drawer from "../components/Navigation/Drawer.astro";
 import DrawerTrigger from "../components/Navigation/DrawerButton.astro";
 import { ViewTransitions } from "astro:transitions";
@@ -30,7 +29,6 @@ const {
 		<ViewTransitions />
 	</head>
 	<body class="bg-[var(--bg-color)] text-[var(--text-main)] overflow-x-hidden selection:bg-[#8EA5A5]/30">
-		<Background transition:persist />
 
 		<Drawer side="left" id="drawer-left" transition:persist />
 		<Drawer
@@ -78,16 +76,11 @@ const {
 				scroll-behavior: smooth;
 			}
 			body {
-				background: radial-gradient(
-					circle at 50% 50%,
-					#dfdbd2 0%,
-					#ccc8be 100%
-				);
+				background-color: var(--bg-canvas);
 			}
 
 			/* クリック時に即時開始するフェードアウト・ぼかしアニメーション (ドロワー閉動作の700msと完全同期) */
 			.is-fading-out main,
-			.is-fading-out #bg-canvas,
 			.is-fading-out aside {
 				animation: 700ms cubic-bezier(0.6, 0, 0.2, 1) both fade-out;
 			}
