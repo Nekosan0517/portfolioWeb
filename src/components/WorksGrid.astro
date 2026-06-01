@@ -8,13 +8,17 @@ interface Props {
 
 const { works } = Astro.props;
 
+// 年ごとの作品グループ化処理
 const worksByYear = works.reduce<Record<string, CollectionEntry<'works'>[]>>((acc, work) => {
+  // 日付文字列からの年情報抽出処理
   const year = work.data.date.split('-')[0];
   if (!acc[year]) acc[year] = [];
+  // 年別配列への作品データの追加処理
   acc[year].push(work);
   return acc;
 }, {});
 
+// 年キーの取得と降順ソート処理
 const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
 ---
 
@@ -31,22 +35,28 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
       </div>
 
       <div id="works-container" class="w-full space-y-16">
-        {sortedYears.map(year => (
-          <div data-year-group={year}>
-            <div class="flex items-center gap-5 mb-10">
-              <span class="text-xs tracking-[0.5em] text-[var(--text-main)] font-light whitespace-nowrap">
-                {year}年
-              </span>
-              <div class="h-px flex-grow bg-[#B36C34]/50"></div>
-            </div>
+        {
+          // 年別配列に基づく年セクションのレンダリング処理
+          sortedYears.map(year => (
+            <div data-year-group={year}>
+              <div class="flex items-center gap-5 mb-10">
+                <span class="text-xs tracking-[0.5em] text-[var(--text-main)] font-light whitespace-nowrap">
+                  {year}年
+                </span>
+                <div class="h-px flex-grow bg-[#B36C34]/50"></div>
+              </div>
 
-            <div class="works-year-grid grid grid-cols-1 md:grid-cols-2 gap-12">
-              {worksByYear[year].map(work => (
-                <WorkCard work={work} />
-              ))}
+              <div class="works-year-grid grid grid-cols-1 md:grid-cols-2 gap-12">
+                {
+                  // 該当年の作品配列に基づく WorkCard のレンダリング処理
+                  worksByYear[year].map(work => (
+                    <WorkCard work={work} />
+                  ))
+                }
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
     </>
   ) : (
@@ -81,47 +91,69 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
 </style>
 
 <script>
+  // ソートボタンの初期化およびハンドラ設定処理
   function setupSortButtons(): void {
+    // 作品コンテナ要素の取得処理
     const container = document.getElementById('works-container');
     if (!container) return;
 
+    // 全ソートボタンの取得処理
     const buttons = document.querySelectorAll<HTMLButtonElement>('.sort-btn');
 
+    // 各ボタンへのリスナー登録処理
     buttons.forEach(btn => {
+      // クリックイベントの登録処理
       btn.addEventListener('click', () => {
         const sortOrder = btn.dataset.sort;
 
+        // 全ボタンのアクティブ状態の解除処理
         buttons.forEach(b => {
+          // クラス除去処理
           b.classList.remove('is-active');
+          // 属性設定処理
           b.setAttribute('aria-pressed', 'false');
         });
+        // 選択されたボタンのアクティブ状態の設定処理
         btn.classList.add('is-active');
+        // 属性設定処理
         btn.setAttribute('aria-pressed', 'true');
 
+        // 年グループ要素リストの取得処理
         const groups = [...container.querySelectorAll<HTMLElement>('[data-year-group]')];
+        // 年グループ配列のソート処理
         groups.sort((a, b) => {
           const ya = a.dataset.yearGroup ?? '';
           const yb = b.dataset.yearGroup ?? '';
+          // 指定オーダーに基づく文字列比較処理
           return sortOrder === 'desc' ? yb.localeCompare(ya) : ya.localeCompare(yb);
         });
 
+        // 各年グループ内カードのソート処理
         groups.forEach(group => {
+          // グリッド要素の取得処理
           const grid = group.querySelector<HTMLElement>('.works-year-grid');
           if (grid) {
+            // カード要素リストの取得処理
             const cards = [...grid.querySelectorAll<HTMLElement>('[data-date]')];
+            // カード配列のソート処理
             cards.sort((a, b) => {
               const da = a.dataset.date ?? '';
               const db = b.dataset.date ?? '';
+              // 指定オーダーに基づく日付文字列比較処理
               return sortOrder === 'desc' ? db.localeCompare(da) : da.localeCompare(db);
             });
+            // ソート後カード要素の再追加（ドム並び替え）処理
             cards.forEach(card => grid.appendChild(card));
           }
+          // ソート後年グループ要素の再追加（ドム並び替え）処理
           container.appendChild(group);
         });
       });
     });
   }
 
+  // 初期ロード時のソート初期化処理の実行
   setupSortButtons();
+  // SPA遷移後の再初期化イベント監視処理
   document.addEventListener('astro:after-swap', setupSortButtons);
 </script>

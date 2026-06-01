@@ -1,14 +1,15 @@
 ---
 interface Props {
-	side: 'left' | 'right';
+	side: "left" | "right";
 	targetId: string;
 }
 
 const { side, targetId } = Astro.props;
 
-const positionClass = side === 'left' 
-	? 'left-0 rounded-r-full border-l-0 [.is-left-open_&]:translate-x-80' 
-	: 'right-0 rounded-l-full border-r-0 [.is-right-open_&]:-translate-x-80';
+const positionClass =
+	side === "left"
+		? "left-0 rounded-r-full border-l-0 [.is-left-open_&]:translate-x-80"
+		: "right-0 rounded-l-full border-r-0 [.is-right-open_&]:-translate-x-80";
 ---
 
 <button
@@ -19,53 +20,61 @@ const positionClass = side === 'left'
 		"fixed top-1/2 z-[60] h-24 w-6 -translate-y-1/2 transition-all duration-700 ease-in-out",
 		"bg-[var(--button-bg)] hover:bg-[var(--text-subtle-alpha)] backdrop-blur-md border-2 border-[#967661]/40 hover:border-[#D88C51]",
 		"flex items-center justify-center group focus:outline-none",
-		positionClass
+		positionClass,
 	]}
 	aria-label={`Open ${side} menu`}
 >
-	<svg 
-		xmlns="http://www.w3.org/2000/svg" 
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
 		class:list={[
 			"w-4 h-4 text-[var(--text-muted)] group-hover:text-[#D88C51] transition-all duration-700 ease-in-out",
-			side === 'left' 
-				? "rotate-0 [.is-left-open_&]:rotate-180" 
-				: "rotate-180 [.is-right-open_&]:rotate-0"
-		]} 
-		fill="none" 
-		viewBox="0 0 24 24" 
+			side === "left"
+				? "rotate-0 [.is-left-open_&]:rotate-180"
+				: "rotate-180 [.is-right-open_&]:rotate-0",
+		]}
+		fill="none"
+		viewBox="0 0 24 24"
 		stroke="currentColor"
 	>
-		<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+		<path
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			stroke-width="2"
+			d="M9 5l7 7-7 7"></path>
 	</svg>
 </button>
 
 <script>
 	function setupDrawerButton() {
-		// すでにリスナー登録済みのボタン（data-has-listener を持つもの）は対象外にする
-		const buttons = document.querySelectorAll('button[data-target]:not([data-has-listener])');
-		buttons.forEach(button => {
-			button.addEventListener('click', () => {
-				const side = button.getAttribute('data-side');
+		// すでにリスナー登録済みのボタン（data-has-listener を持つもの）は対象外
+		const buttons = document.querySelectorAll(
+			"button[data-target]:not([data-has-listener])",
+		);
+		buttons.forEach((button) => {
+			button.addEventListener("click", () => {
+				const side = button.getAttribute("data-side");
 				const body = document.body;
 
-				if (side === 'left') {
-					body.classList.toggle('is-left-open');
-					// 反対側が開いていたら閉じる（干渉防止）
-					body.classList.remove('is-right-open');
+				// 反対側が開いた場合に閉じる処理
+				if (side === "left") {
+					body.classList.toggle("is-left-open");
+					body.classList.remove("is-right-open");
 				} else {
-					body.classList.toggle('is-right-open');
-					body.classList.remove('is-left-open');
+					body.classList.toggle("is-right-open");
+					body.classList.remove("is-left-open");
 				}
 
-				const isOpen = body.classList.contains('is-left-open') || body.classList.contains('is-right-open');
-				body.classList.toggle('is-drawer-open', isOpen);
+				const isOpen =
+					body.classList.contains("is-left-open") ||
+					body.classList.contains("is-right-open");
+				body.classList.toggle("is-drawer-open", isOpen);
 			});
 
 			// リスナー登録済みフラグを設定
-			button.setAttribute('data-has-listener', 'true');
+			button.setAttribute("data-has-listener", "true");
 		});
 	}
 
 	setupDrawerButton();
-	document.addEventListener('astro:after-swap', setupDrawerButton);
+	document.addEventListener("astro:after-swap", setupDrawerButton);
 </script>

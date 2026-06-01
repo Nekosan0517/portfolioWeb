@@ -71,6 +71,7 @@ const { photos } = Astro.props;
 </details>
 
 <script>
+	// アコーディオンおよびカルーセル初期化処理のセットアップ
 	const initAccordionCarousel = () => {
 		const accordion = document.querySelector('details.group-accordion') as HTMLDetailsElement;
 		if (!accordion) return;
@@ -87,9 +88,10 @@ const { photos } = Astro.props;
 		let isAnimating = false;
 
 		// [非自明ロジックの機能解説]
-		// AstroのSPA遷移（ViewTransitions）などによりスクリプトが再実行された際、
-		// viewport 内に無限スクロール用のクローン要素が二重に挿入されるのを防ぐため、事前に削除します。
+		// AstroのSPA遷移（ViewTransitions）などによるスクリプト再実行時、
+		// viewport 内に無限スクロール用のクローン要素が二重に挿入されるのを防ぐための事前削除。
 		const existingClones = viewport.querySelectorAll('.is-clone');
+		// 既存クローンのループ処理による削除
 		existingClones.forEach((clone) => clone.remove());
 
 		const items = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
@@ -99,17 +101,19 @@ const { photos } = Astro.props;
 		let currentIndex = 1;
 		let allItems = items;
 
+		// カルーセルのカレント位置へのスクロール制御処理
 		const scrollToCurrentIndex = (smooth = false) => {
 			if (!hasCarousel) return;
 			const targetItem = allItems[currentIndex];
 			if (!targetItem) return;
 			
 			if (smooth) {
+				// なめらかなスクロール処理の実行
 				smoothScrollTo(currentIndex, 750);
 			} else {
 				// [非自明ロジックの機能解説]
 				// 初期位置へ瞬時に移動する際、CSSのスクロールスナップ定義 (scroll-snap-type) と
-				// JSのスクロール位置設定が競合して位置ズレを起こすのを防ぐため、一時的にスナップを無効化します。
+				// JSのスクロール位置設定との競合による位置ズレを防ぐため、一時的にスナップを無効化。
 				viewport.style.scrollSnapType = 'none';
 				viewport.scrollLeft = targetItem.offsetLeft;
 				viewport.style.scrollSnapType = 'x mandatory';
@@ -118,20 +122,23 @@ const { photos } = Astro.props;
 
 		if (hasCarousel) {
 			// [非自明ロジックの機能解説]
-			// 無限ループカルーセルを実現するため、最初の要素を末尾の後に、最後の要素を先頭の前にそれぞれクローン挿入します。
+			// 無限ループカルーセル実現のため、最初の要素を末尾の後に、最後の要素を先頭の前にそれぞれクローン挿入。
+			// ループカルーセル用クローン作成処理
 			const firstClone = items[0].cloneNode(true) as HTMLElement;
 			const lastClone = items[total - 1].cloneNode(true) as HTMLElement;
 			firstClone.classList.add('is-clone');
 			lastClone.classList.add('is-clone');
 
+			// クローン要素のドム挿入処理
 			viewport.insertBefore(lastClone, items[0]);
 			viewport.appendChild(firstClone);
 
 			allItems = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
 		}
 
-		// アコーディオン開閉制御とアニメーション終了のハンドリング
+		// アコーディオン開閉イベントのリスナー登録処理
 		summary.addEventListener('click', (e) => {
+			// デフォルト挙動の無効化
 			e.preventDefault();
 			if (isAnimating) return;
 
@@ -141,40 +148,47 @@ const { photos } = Astro.props;
 				accordion.classList.remove('is-open');
 				if (icon) icon.style.transform = 'rotate(0deg)';
 				
-				const onTransitionEnd = (event: TransitionEvent) => {
+				// トランジション終了イベントのリスナー登録処理
+				content.addEventListener('transitionend', function onTransitionEnd(event: TransitionEvent) {
 					if (event.propertyName === 'grid-template-rows') {
 						accordion.removeAttribute('open');
 						isAnimating = false;
+						// リスナー解除処理
 						content.removeEventListener('transitionend', onTransitionEnd);
 					}
-				};
-				content.addEventListener('transitionend', onTransitionEnd);
+				});
 			} else {
 				accordion.setAttribute('open', 'true');
 				if (icon) icon.style.transform = 'rotate(180deg)';
 				
+				// アニメーションフレーム要求処理
 				requestAnimationFrame(() => {
+					// アニメーションフレーム要求処理
 					requestAnimationFrame(() => {
 						accordion.classList.add('is-open');
 					});
 				});
 
-				const onTransitionEnd = (event: TransitionEvent) => {
+				// トランジション終了イベントのリスナー登録処理
+				content.addEventListener('transitionend', function onTransitionEnd(event: TransitionEvent) {
 					if (event.propertyName === 'grid-template-rows') {
 						isAnimating = false;
+						// リスナー解除処理
 						content.removeEventListener('transitionend', onTransitionEnd);
 						
 						if (hasCarousel) {
+							// スクロール位置制御処理の実行
 							scrollToCurrentIndex(false);
+							// アクティブ状態の更新処理の実行
 							updateState();
 						}
 					}
-				};
-				content.addEventListener('transitionend', onTransitionEnd);
+				});
 			}
 		});
 
 		if (hasCarousel && prevBtn && nextBtn) {
+			// インジケータードット全要素の取得処理
 			const dots = accordion.querySelectorAll('.indicator-dot');
 
 			if (dots.length <= 1) {
@@ -185,8 +199,9 @@ const { photos } = Astro.props;
 			let isScrolling = false;
 
 			// [非自明ロジックの機能解説]
-			// CSSの scroll-snap-type が有効なままだと、JSによるなめらかなイージングスクロール中に
-			// 挙動がカクついてしまうため、移動中はスナップを無効化 (none) とし、完了後に復元します。
+			// CSSの scroll-snap-type が有効な状態でのなめらかなイージングスクロール中の
+			// カクつきを防ぐため、移動中はスナップを一時的に無効化 (none) とし、完了後に復元。
+			// イージングを適用したなめらかなスクロール処理
 			const smoothScrollTo = (targetIndex: number, duration: number) => {
 				if (isScrolling) return;
 				isScrolling = true;
@@ -207,6 +222,7 @@ const { photos } = Astro.props;
 
 				const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
+				// アニメーション進捗に応じたスクロール位置更新処理
 				const animateScroll = (currentTime: number) => {
 					const elapsed = currentTime - startTime;
 					const progress = Math.min(elapsed / duration, 1);
@@ -214,25 +230,30 @@ const { photos } = Astro.props;
 					viewport.scrollLeft = startLeft + change * easeInOutQuad(progress);
 
 					if (progress < 1) {
+						// 次フレームのアニメーション描画要求処理
 						requestAnimationFrame(animateScroll);
 					} else {
 						viewport.scrollLeft = targetLeft;
 						currentIndex = targetIndex;
 						
+						// クローン到達時のループワープ処理の実行
 						handleLoopWrap();
 						
 						viewport.style.scrollSnapType = 'x mandatory';
 						isScrolling = false;
+						// アクティブ状態の更新処理の実行
 						updateState();
 					}
 				};
 
+				// アニメーション描画要求処理
 				requestAnimationFrame(animateScroll);
 			};
 
 			// [非自明ロジックの機能解説]
 			// インデックスがクローン要素（両端）に到達した瞬間、スクロールアニメーションなしで
 			// 反対側の本物スライドへ位置をジャンプさせ、シームレスな無限ループを実現します。
+			// クローン到達時のシームレスなループワープ処理
 			const handleLoopWrap = () => {
 				if (currentIndex === 0) {
 					currentIndex = total;
@@ -243,11 +264,13 @@ const { photos } = Astro.props;
 				}
 			};
 
+			// アクティブインジケータードットの表示更新処理
 			const updateState = () => {
 				const scrollLeft = viewport.scrollLeft;
 				
 				let closestIndex = currentIndex;
 				let minDiff = Infinity;
+				// スクロール位置と各スライドの距離比較処理
 				allItems.forEach((item, idx) => {
 					const diff = Math.abs(item.offsetLeft - scrollLeft);
 					if (diff < minDiff) {
@@ -265,6 +288,7 @@ const { photos } = Astro.props;
 					realIndex = closestIndex - 1;
 				}
 
+				// ドット状態（アクティブクラス）の切り替え処理
 				dots.forEach((dot, idx) => {
 					if (idx === realIndex) {
 						dot.classList.add('is-active');
@@ -274,12 +298,14 @@ const { photos } = Astro.props;
 				});
 			};
 
+			// スクロール終了検知時の座標補正処理
 			const handleScrollEnd = () => {
 				if (isScrolling) return;
 
 				const scrollLeft = viewport.scrollLeft;
 				let closestIndex = currentIndex;
 				let minDiff = Infinity;
+				// スクロール停止位置に最も近いスライドの検索処理
 				allItems.forEach((item, idx) => {
 					const diff = Math.abs(item.offsetLeft - scrollLeft);
 					if (diff < minDiff) {
@@ -290,7 +316,6 @@ const { photos } = Astro.props;
 
 				currentIndex = closestIndex;
 
-				// 手動スクロール（スワイプ）でクローン位置に入った場合もループを処理
 				if (currentIndex === 0) {
 					currentIndex = total;
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
@@ -299,51 +324,69 @@ const { photos } = Astro.props;
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
 				}
 
+				// インジケーターのアクティブ表示更新処理
 				updateState();
 			};
 
+			// 前へボタンのクリックイベント登録処理
 			prevBtn.addEventListener('click', () => {
 				if (isScrolling) return;
+				// 1つ前のスライドへのスクロール遷移処理
 				smoothScrollTo(currentIndex - 1, 750);
 			});
 
+			// 次へボタンのクリックイベント登録処理
 			nextBtn.addEventListener('click', () => {
 				if (isScrolling) return;
+				// 1つ先のスライドへのスクロール遷移処理
 				smoothScrollTo(currentIndex + 1, 750);
 			});
 
+			// インジケータードットのクリックイベント登録処理
 			dots.forEach((dot) => {
+				// ドットのクリックイベント登録処理
 				dot.addEventListener('click', () => {
 					if (isScrolling) return;
-					const index = parseInt(dot.getAttribute('data-index') || '0');
+					const index = parseInt(dot.getAttribute('data-index') || '0', 10);
+					// 該当インデックススライドへのスクロール遷移処理
 					smoothScrollTo(index + 1, 750);
 				});
 			});
 
 			let scrollTimeout: number;
+			// カルーセルのスクロールイベント登録処理
 			viewport.addEventListener('scroll', () => {
+				// インジケーター表示の更新処理
 				updateState();
 				if (isScrolling) return;
 
+				// 遅延タイマークリア処理
 				clearTimeout(scrollTimeout);
+				// 一定時間スクロール停止検知時の座標補正遅延実行処理
 				scrollTimeout = window.setTimeout(handleScrollEnd, 150);
 			}, { passive: true });
 
+			// カルーセルのスクロール終了イベント登録処理
 			viewport.addEventListener('scrollend', handleScrollEnd);
 
 			if (accordion.hasAttribute('open')) {
+				// 初期オープン時のカレント位置へのスクロール遷移処理
 				scrollToCurrentIndex(false);
+				// インジケーター表示の更新処理
 				updateState();
 			}
 			
+			// リサイズ検知用オブザーバーのインスタンス化処理
 			const resizeObserver = new ResizeObserver(() => {
 				if (!isScrolling) {
 					viewport.style.scrollSnapType = 'none';
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
 					viewport.style.scrollSnapType = 'x mandatory';
+					// インジケーター表示の更新処理
 					updateState();
 				}
 			});
+			// リサイズ監視対象要素の登録処理
 			resizeObserver.observe(viewport);
 		} else {
 			if (prevBtn) prevBtn.style.display = 'none';
@@ -351,7 +394,9 @@ const { photos } = Astro.props;
 		}
 	};
 
+	// 初期ロード時の初期化処理実行
 	document.addEventListener('DOMContentLoaded', initAccordionCarousel);
+	// SPA遷移後の再初期化処理実行
 	document.addEventListener('astro:page-load', initAccordionCarousel);
 </script>
 

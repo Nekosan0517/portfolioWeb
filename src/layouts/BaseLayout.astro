@@ -62,18 +62,22 @@ const {
 			 * 
 			 * [設計意図の機能解説]
 			 * ドロワーコンポーネント（NavigationDrawer, WorksIndexDrawer）やトリガーボタン（DrawerTrigger）は、
-			 * 直接お互いのDOMを相互に参照せず、`document.body` の classList (`is-left-open`, `is-right-open`, `is-drawer-open`) を
-			 * トグルすることで状態を仲介しています。これにより各パーツ間の結合度を下げ、カプセル化を高めています。
+			 * 直接お互いのDOMを相互参照せず、`document.body` の classList (`is-left-open`, `is-right-open`, `is-drawer-open`) を
+			 * トグルすることで状態を仲介。各パーツ間の結合度を下げ、カプセル化を向上。
 			 */
 
-			// 履歴遷移（ブラウザの戻る・進む）の準備開始時に、ドロワーを強制的に閉じて表示崩れを防ぎます。
-			// （※ is-fading-out はトランジションのフェードアウトが終了するまで透明度を保つ必要があるため、ここでは消さず遷移後にリセットします）
+			// 履歴遷移（ブラウザの戻る・進む）の準備開始時、ドロワーを強制的に閉じて表示崩れを防止。
+			// （※ is-fading-out はトランジションのフェードアウトが終了するまで透明度を保つ必要があるため、遷移後にリセット）
+			// 履歴遷移の開始イベント監視処理
 			document.addEventListener('astro:before-preparation', () => {
+				// ドロワー開閉用クラスの除去処理
 				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
 			});
 
-			// 新しいページのロードが完了したタイミングで、全体のフェードアウト状態クラスを確実にクリアします。
+			// 新しいページのロード完了時、全体のフェードアウト状態クラスを確実にクリア。
+			// ページロード完了イベント監視処理
 			document.addEventListener('astro:page-load', () => {
+				// フェードアウト状態クラスの除去処理
 				document.body.classList.remove('is-fading-out');
 			});
 		</script>

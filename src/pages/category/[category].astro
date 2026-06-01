@@ -6,11 +6,15 @@ import WorksGrid from '../../components/WorksGrid.astro';
 import { CATEGORIES, CATEGORY_KEYS } from '../../constants/categories';
 import type { CategoryInfo } from '../../constants/categories';
 
+// 各カテゴリに対応する動的ルートパスの生成処理
 export async function getStaticPaths() {
+	// 全作品データの取得処理
 	const allWorks = await getCollection('works');
 	
+	// 定義済みのカテゴリキー配列に基づくマッピング処理
 	return CATEGORY_KEYS.map((catKey) => {
 		const categoryInfo = CATEGORIES[catKey];
+		// 該当カテゴリに属する作品のみを抽出して日付の降順にソートする処理
 		const filteredWorks = allWorks
 			.filter((work) => work.data.category === catKey)
 			.sort((a, b) => b.data.date.localeCompare(a.data.date));

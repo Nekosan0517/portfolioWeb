@@ -9,12 +9,15 @@ interface Props {
 
 const { id, activeCategory } = Astro.props;
 
+// 全作品データの取得処理
 const allWorks: CollectionEntry<"works">[] = await getCollection("works");
 
+// 日付の降順による作品データのソート処理
 const sortedWorks = allWorks.sort((a, b) =>
 	b.data.date.localeCompare(a.data.date),
 );
 
+// アクティブカテゴリによる作品データの絞り込み処理
 const displayWorks = activeCategory
 	? sortedWorks.filter((work) => work.data.category === activeCategory)
 	: sortedWorks;
@@ -41,19 +44,22 @@ const displayWorks = activeCategory
 
 		<nav class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
 			<ul class="space-y-6">
-				{displayWorks.map((work) => (
-					<li class="group">
-						<a href={`/works/${work.id}`} class="block">
-							<span class="text-xs text-[var(--text-subtle)]/70 block mb-1 uppercase tracking-tighter">
-								{work.data.category}
-							</span>
-							<div class="text-xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
-								<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3" />
-								{work.data.title}
-							</div>
-						</a>
-					</li>
-				))}
+				{
+					// 作品リスト配列に基づくインデックス項目のレンダリング処理
+					displayWorks.map((work) => (
+						<li class="group">
+							<a href={`/works/${work.id}`} class="block">
+								<span class="text-xs text-[var(--text-subtle)]/70 block mb-1 uppercase tracking-tighter">
+									{work.data.category}
+								</span>
+								<div class="text-xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center">
+									<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-4 transition-all duration-500 mr-0 group-hover:mr-3" />
+									{work.data.title}
+								</div>
+							</a>
+						</li>
+					))
+				}
 			</ul>
 		</nav>
 
@@ -73,39 +79,53 @@ const displayWorks = activeCategory
 	 * ドロワー内リンクのトランジション制御処理
 	 * 
 	 * [非自明ロジックの機能解説]
-	 * NavigationDrawer と同様に、Astro の SPA 遷移時のイベントリスナー多重登録を防止し、
-	 * ドロワーが閉じるアニメーション (700ms) と同期したスムーズな画面遷移を実現します。
+	 * NavigationDrawer と同様に、Astro の SPA 遷移時のイベントリスナー多重登録の防止、
+	 * およびドロワーが閉じるアニメーション (700ms) と同期したスムーズな画面遷移を実現する処理。
 	 */
+	// リンククリック時の画面遷移処理のセットアップ
 	function setupDrawerLinks() {
+		// 未登録のドロワー内作品リンク要素の取得処理
 		const links = document.querySelectorAll(
 			"aside nav a:not([data-has-transition-listener])",
 		);
 
+		// 各リンクへのイベントリスナー登録処理
 		links.forEach((link) => {
+			// クリックイベントのリスナー登録処理
 			link.addEventListener("click", (event) => {
+				// 遷移先URL属性の取得処理
 				const href = link.getAttribute("href");
 				if (!href || href.startsWith("#")) return;
 
+				// デフォルト遷移の無効化処理
 				event.preventDefault();
 
+				// body へのクラス追加によるフェードアウトアニメーション開始処理
 				document.body.classList.add("is-fading-out");
+				// ドロワーを閉じるための body からのクラス除去処理
 				document.body.classList.remove(
 					"is-left-open",
 					"is-right-open",
 					"is-drawer-open",
 				);
 
+				// トランジション完了後の遅延遷移実行処理
 				setTimeout(() => {
+					// 画面遷移用モジュールのインポートおよび遷移実行処理
 					import("astro:transitions/client").then(({ navigate }) => {
+						// 遷移先URLへの移動処理
 						navigate(href);
 					});
 				}, 750);
 			});
 
+			// 多重登録防止用属性の設定処理
 			link.setAttribute("data-has-transition-listener", "true");
 		});
 	}
 
+	// 初期ロード時のセットアップ実行処理
 	setupDrawerLinks();
+	// SPAページ遷移後の再初期化イベント監視処理
 	document.addEventListener("astro:after-swap", setupDrawerLinks);
 </script>

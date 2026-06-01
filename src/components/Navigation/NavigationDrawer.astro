@@ -6,6 +6,7 @@ interface Props {
 }
 
 const { id } = Astro.props;
+// カテゴリ定数オブジェクトの値の配列化処理
 const categoriesList = Object.values(CATEGORIES);
 ---
 
@@ -20,7 +21,9 @@ const categoriesList = Object.values(CATEGORIES);
 >
 	<div class="flex flex-col h-full p-8">
 		<div class="mb-12">
-			<h2 class="text-xs font-bold tracking-[0.2em] text-[var(--text-subtle)] uppercase">
+			<h2
+				class="text-xs font-bold tracking-[0.2em] text-[var(--text-subtle)] uppercase"
+			>
 				Navigation
 			</h2>
 			<p class="mt-2 text-sm text-[var(--text-subtle)]/70">
@@ -35,21 +38,26 @@ const categoriesList = Object.values(CATEGORIES);
 						href="/"
 						class="text-2xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center"
 					>
-						<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4" />
+						<span
+							class="w-0 h-[2px] bg-[#D88C51] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4"
+						></span>
 						ALL Archive
 					</a>
 				</li>
-				{categoriesList.map((cat) => (
-					<li class="group">
-						<a
-							href={`/category/${cat.id}`}
-							class="text-2xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center"
-						>
-							<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4" />
-							{cat.label}
-						</a>
-					</li>
-				))}
+				{
+					// カテゴリリスト配列に基づくナビゲーション項目のレンダリング処理
+					categoriesList.map((cat) => (
+						<li class="group">
+							<a
+								href={`/category/${cat.id}`}
+								class="text-2xl font-light text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-all duration-300 flex items-center"
+							>
+								<span class="w-0 h-[2px] bg-[#D88C51] group-hover:w-8 transition-all duration-500 mr-0 group-hover:mr-4" />
+								{cat.label}
+							</a>
+						</li>
+					))
+				}
 			</ul>
 		</nav>
 
@@ -69,45 +77,56 @@ const categoriesList = Object.values(CATEGORIES);
 	 * ドロワー内リンクのトランジション制御処理
 	 * 
 	 * [非自明ロジックの機能解説]
-	 * 1. Astro の SPA 遷移 (ViewTransitions) では、ページ遷移後もグローバルなイベントリスナーが
-	 *    重複登録されてしまうバグを防ぐため、カスタム属性 `data-has-transition-listener` で重複チェックを行います。
-	 * 2. リンクをクリックした際、ドロワーが閉じる CSS アニメーション (700ms) と画面のフェードアウト処理が
-	 *    同時に開始されるよう、body に `is-fading-out` を付与しつつドロワー開閉用クラスを取り除きます。
-	 * 3. アニメーションが完全に完了したタイミング (750ms) で Astro の `navigate` 関数を手動実行し、
-	 *    シームレスな画面遷移を実現します。
+	 * 1. Astro の SPA 遷移 (ViewTransitions) 時、ページ遷移後もグローバルなイベントリスナーが
+	 *    重複登録されてしまうのを防ぐため、カスタム属性 `data-has-transition-listener` で重複チェック。
+	 * 2. リンククリック時、ドロワーが閉じる CSS アニメーション (700ms) と画面のフェードアウト処理が
+	 *    同時に開始されるよう、body に `is-fading-out` を付与しつつドロワー開閉用クラスを除去。
+	 * 3. アニメーションが完全に完了したタイミング (750ms) で Astro の `navigate` 関数を手動実行し、画面遷移を実装。
 	 */
+	// リンククリック時の画面遷移処理のセットアップ
 	function setupDrawerLinks() {
+		// 未登録のドロワー内ナビゲーションリンク要素の取得処理
 		const links = document.querySelectorAll(
 			"aside nav a:not([data-has-transition-listener])",
 		);
 
+		// 各リンクへのイベントリスナー登録処理
 		links.forEach((link) => {
+			// クリックイベントのリスナー登録処理
 			link.addEventListener("click", (event) => {
+				// 遷移先URL属性の取得処理
 				const href = link.getAttribute("href");
 				if (!href || href.startsWith("#")) return;
 
+				// デフォルト遷移の無効化処理
 				event.preventDefault();
 
-				// アニメーション用クラスの制御
+				// body へのクラス追加によるフェードアウトアニメーション開始処理
 				document.body.classList.add("is-fading-out");
+				// ドロワーを閉じるための body からのクラス除去処理
 				document.body.classList.remove(
 					"is-left-open",
 					"is-right-open",
 					"is-drawer-open",
 				);
 
-				// アニメーション完了後に遷移
+				// トランジション完了後の遅延遷移実行処理
 				setTimeout(() => {
+					// 画面遷移用モジュールのインポートおよび遷移実行処理
 					import("astro:transitions/client").then(({ navigate }) => {
+						// 遷移先URLへの移動処理
 						navigate(href);
 					});
 				}, 750);
 			});
 
+			// 多重登録防止用属性の設定処理
 			link.setAttribute("data-has-transition-listener", "true");
 		});
 	}
 
+	// 初期ロード時のセットアップ実行処理
 	setupDrawerLinks();
+	// SPAページ遷移後の再初期化イベント監視処理
 	document.addEventListener("astro:after-swap", setupDrawerLinks);
 </script>
