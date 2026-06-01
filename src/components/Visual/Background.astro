@@ -5,17 +5,15 @@
 <canvas id="bg-canvas" class="fixed inset-0 -z-10 bg-[var(--bg-canvas)]" transition:persist></canvas>
 
 <script>
-    // 淡い差し色のパレット定義
-    // 原色を避け、透明度を調整した「おしゃれな淡い色」を採用
+    // 粒子の色設定（色をより明瞭で濃く設定）
     const COLOR_PALETTE = [
-        "rgba(0, 0, 0, 0.08)",       // 薄い黒
-        "rgba(255, 107, 0, 0.22)",   // 鮮やかなオレンジ
-        "rgba(0, 0, 0, 0.04)",       // ごく薄い黒
-        "rgba(255, 140, 40, 0.14)",  // 淡いオレンジ
-        "rgba(100, 100, 110, 0.1)",  // 薄いグレー
+        "rgba(97, 49, 28, 0.1)",    // ダークブラウン
+        "rgba(179, 108, 52, 0.18)",  // ウォームオレンジ（線色）
+        "rgba(150, 118, 97, 0.2)", // ミディアムブラウン（アクセント）
+        "rgba(97, 49, 28, 0.06)",   // 薄いブラウン
+        "rgba(179, 108, 52, 0.10)",  // 淡いオレンジ
     ];
 
-    // 多重初期化およびリーク防止のためのライフサイクル管理変数
     let animationFrameId: number | null = null;
     let resizeListener: (() => void) | null = null;
 
@@ -23,15 +21,25 @@
         private canvas: HTMLCanvasElement;
         private x: number = 0;
         private y: number = 0;
-        private size: number = 0;
+        private z: number = 0;
+        
         private vx: number = 0;
         private vy: number = 0;
+        private vz: number = 0;
+
+        // 基底速度
         private baseVx: number = 0;
         private baseVy: number = 0;
-        private friction: number = 0.98;
-        private color: string = "";
+        private baseVz: number = 0;
 
-        // 単調さを消すための「ゆらぎ」パラメータ
+        // 寿命管理
+        private age: number = 0;
+        private maxLife: number = 0;
+
+        private size: number = 0;
+        private color: string = "";
+        private isAccent: boolean = false;
+
         private wiggles: number = Math.random() * Math.PI * 2;
         private wiggleSpeed: number = Math.random() * 0.02;
 
@@ -40,61 +48,125 @@
             this.init();
         }
 
-        init(): void {
-            this.x = Math.random() * this.canvas.width;
-            this.y = Math.random() * this.canvas.height;
-            this.size = Math.random() * 1.8 + 0.3; // サイズのバリエーションを拡大
+        init(isRespawn: boolean = false): void {
+            this.x = (Math.random() - 0.5) * this.canvas.width;
+            this.y = (Math.random() - 0.5) * this.canvas.height;
+            
+            if (isRespawn) {
+                // リスポーン時は画面の手前側から発生させる
+                this.z = -250 + Math.random() * 100;
+            } else {
+                // 初回は画面全体に分散して配置
+                this.z = (Math.random() - 0.5) * 400;
+            }
 
-            // 初速にランダムな方向性を持たせる
             const angle = Math.random() * Math.PI * 2;
-            const force = Math.random() * 0.3;
-            this.vx = Math.cos(angle) * force;
-            this.vy = Math.sin(angle) * force;
+            const force = Math.random() * 0.25;
+            this.baseVx = Math.cos(angle) * force;
+            this.baseVy = Math.sin(angle) * force;
+            // 穏やかに奥に進むベース速度を持たせる
+            this.baseVz = 0.05 + Math.random() * 0.1;
 
-            this.baseVx = this.vx;
-            this.baseVy = this.vy;
+            this.vx = this.baseVx;
+            this.vy = this.baseVy;
+            this.vz = this.baseVz;
 
-            // パレットからランダムに色を割り当て
-            this.color =
-                COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+            // 大きすぎる粒子を防ぐため、ベースサイズを全体的に縮小 (0.1 〜 0.6)
+            this.size = Math.random() * 0.5 + 0.1;
+
+            this.isAccent = false;
+            this.color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+
+            // 寿命を 600〜1200 フレーム (約10〜20秒) に設定
+            this.age = 0;
+            this.maxLife = 600 + Math.random() * 600;
         }
 
         update(scrollDelta: number, windForce: number): void {
-            // スクロールと風の影響を適用
-            this.vy += scrollDelta * 0.03;
-            this.vx += windForce;
+            this.age++;
 
-            // ゆらぎ（蛇行するような動き）を追加して単調さを排除
+            // 寿命の残り25%以下になったら、徐々に奥（Z+方向）への推進力を加える
+            if (this.age > this.maxLife * 0.75) {
+                const fadeFactor = (this.age - this.maxLife * 0.75) / (this.maxLife * 0.25);
+                this.vz += fadeFactor * 0.15;
+            }
+
+            this.z = Math.max(this.z, -280);
+
+            // 寿命が尽きる、または奥限度（z = 250）に達した場合はリスポーン
+            if (this.age >= this.maxLife || this.z >= 250) {
+                this.init(true);
+                return;
+            }
+
+            // 風の影響
+            this.vx += windForce * (0.8 + Math.random() * 0.4);
+            this.vz += windForce * (Math.random() - 0.5) * 0.15;
+
+            // スクロールの影響
+            this.vy += scrollDelta * 0.04;
+
+            // ゆらぎ
             this.wiggles += this.wiggleSpeed;
             this.vx += Math.sin(this.wiggles) * 0.05;
             this.vy += Math.cos(this.wiggles) * 0.02;
 
-            // 摩擦と基底速度への復帰
-            this.vx =
-                this.vx * this.friction + this.baseVx * (1 - this.friction);
-            this.vy =
-                this.vy * this.friction + this.baseVy * (1 - this.friction);
+            // 摩擦と基底速度へのスムーズな復帰
+            const k = 0.04;
+            this.vx = this.vx * (1 - k) + this.baseVx * k;
+            this.vy = this.vy * (1 - k) + this.baseVy * k;
+            this.vz = this.vz * (1 - k) + this.baseVz * k;
 
             this.x += this.vx;
             this.y += this.vy;
+            this.z += this.vz;
 
-            // 画面端のループ処理
-            if (this.x > this.canvas.width) this.x = 0;
-            if (this.x < 0) this.x = this.canvas.width;
-            if (this.y > this.canvas.height) this.y = 0;
-            if (this.y < 0) this.y = this.canvas.height;
+            // 境界ループ処理 (X, Y 軸のみループ、Z 軸は寿命と消滅で管理)
+            const borderX = this.canvas.width / 2 + 50;
+            const borderY = this.canvas.height / 2 + 50;
+            
+            if (this.x > borderX) this.x = -borderX;
+            if (this.x < -borderX) this.x = borderX;
+            if (this.y > borderY) this.y = -borderY;
+            if (this.y < -borderY) this.y = borderY;
         }
 
         draw(ctx: CanvasRenderingContext2D): void {
+            const centerX = this.canvas.width / 2;
+            const centerY = this.canvas.height / 2;
+            const fov = 300;
+
+            const scale = fov / (fov + this.z);
+            const cx = centerX + this.x * scale;
+            const cy = centerY + this.y * scale;
+
+            if (cx < 0 || cx > this.canvas.width || cy < 0 || cy > this.canvas.height) {
+                return;
+            }
+
+            // 被写界深度（疑似DoF）の計算
+            const zFocus = -50;
+            const distToFocus = Math.abs(this.z - zFocus);
+            const blurRatio = Math.min(1.0, distToFocus / 250);
+
+            // 大きすぎる粒子を防ぐため、ボケ拡大倍率を最大 2.0 倍に抑制
+            const r = Math.max(0.1, this.size * scale * (1.0 + blurRatio * 1.0));
+            const focalAlpha = 1.0 - blurRatio * 0.88;
+
+            const baseAlpha = this.isAccent ? 0.65 : 0.55;
+            const depthAlpha = Math.max(0.12, Math.min(1.0, (320 - this.z) / 500));
+            
+            ctx.save();
+            ctx.globalAlpha = baseAlpha * depthAlpha * focalAlpha;
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fill();
+            ctx.restore();
         }
     }
 
     function initCanvas(): void {
-        // 1. 以前のループやリスナーが存在すれば完全に破棄する（クリーンアップ）
         if (animationFrameId !== null) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
@@ -104,9 +176,7 @@
             resizeListener = null;
         }
 
-        const canvas = document.getElementById(
-            "bg-canvas"
-        ) as HTMLCanvasElement | null;
+        const canvas = document.getElementById("bg-canvas") as HTMLCanvasElement | null;
         if (!canvas) return;
 
         const ctx = canvas.getContext("2d");
@@ -125,8 +195,7 @@
 
         const createParticles = (): void => {
             particles = [];
-            // 密度を調整（画面面積に応じて粒子数を決定）
-            const count = Math.floor((canvas.width * canvas.height) / 8000);
+            const count = Math.floor((canvas.width * canvas.height) / 3000);
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle(canvas));
             }
@@ -140,21 +209,18 @@
             lastScrollY = currentScrollY;
 
             const isLeftOpen = document.body.classList.contains("is-left-open");
-            const isRightOpen =
-                document.body.classList.contains("is-right-open");
+            const isRightOpen = document.body.classList.contains("is-right-open");
 
-            // ドロワー開閉時の風の演出
-            // 開いた瞬間は大きく動き、閉じた瞬間（引き戻す際）は逆方向に慣性をつける
             if (isLeftOpen && !wasLeftOpen) {
-                windForce = 1.5;
+                windForce = 2.2;
             } else if (isRightOpen && !wasRightOpen) {
-                windForce = -1.5;
+                windForce = -2.2;
             } else if (!isLeftOpen && wasLeftOpen) {
-                windForce = -1.5; // 左ドロワーが閉じる時は左方向（逆向き）への風
+                windForce = -2.2;
             } else if (!isRightOpen && wasRightOpen) {
-                windForce = 1.5; // 右ドロワーが閉じる時は右方向（逆向き）への風
+                windForce = 2.2;
             } else {
-                windForce *= 0.92;
+                windForce *= 0.93;
             }
 
             wasLeftOpen = isLeftOpen;
@@ -168,7 +234,6 @@
             animationFrameId = requestAnimationFrame(animate);
         };
 
-        // リサイズ時のイベントハンドラを保存して登録
         resizeListener = (): void => {
             resize();
             createParticles();
@@ -180,9 +245,6 @@
         animate();
     }
 
-    // 初回初期化
     initCanvas();
-    // ページ遷移（スワップ後）の再セットアップ
     document.addEventListener("astro:after-swap", initCanvas);
 </script>
-

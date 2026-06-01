@@ -33,10 +33,10 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 	<article class="max-w-3xl mx-auto">
 		<header class="mb-12">
 			<div class="flex items-center gap-4 mb-6">
-				<span class="text-xs tracking-[0.3em] uppercase text-[var(--text-subtle)] px-3 py-1 border border-orange-500/20">
+				<span class="text-xs tracking-[0.3em] uppercase text-[var(--text-subtle)] px-3 py-1 border border-[#B36C34]/20">
 					{category}
 				</span>
-				<div class="h-[2px] flex-grow bg-gradient-to-r from-orange-500/40 via-[var(--text-subtle-alpha)] to-transparent"></div>
+				<div class="h-[2px] flex-grow bg-gradient-to-r from-[#B36C34]/50 via-[var(--text-subtle-alpha)] to-transparent"></div>
 			</div>
 			<h1 class="text-5xl font-extralight tracking-tight text-[var(--text-main)] mb-8 leading-tight">
 				{title}
@@ -47,7 +47,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 		</header>
 
 		<section class="mb-16 group">
-			<div class="aspect-video overflow-hidden bg-[var(--card-bg)] border border-orange-500/20 shadow-sm rounded-sm">
+			<div class="aspect-video overflow-hidden bg-[var(--card-bg)] border border-[#B36C34]/20 shadow-sm rounded-sm">
 				{thumbnail ? (
 					<img 
 						src={thumbnail} 
@@ -64,7 +64,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
 			<div class="md:col-span-2">
-				<h2 class="text-sm font-bold text-[var(--text-subtle)] uppercase tracking-widest mb-6 underline decoration-orange-500/30 underline-offset-8">
+				<h2 class="text-sm font-bold text-[var(--text-subtle)] uppercase tracking-widest mb-6 underline decoration-[#B36C34]/30 underline-offset-8">
 					Project Overview
 				</h2>
 				<div class="prose max-w-none text-[var(--text-muted)] leading-loose font-light">
@@ -79,7 +79,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Technologies</h2>
 					<div class="flex flex-wrap gap-2">
 						{tags.map((tag: string) => (
-							<span class="text-[10px] text-[var(--text-muted)] px-2 py-1 bg-[var(--button-bg)] border border-orange-500/20">
+							<span class="text-[10px] text-[var(--text-muted)] px-2 py-1 bg-[var(--button-bg)] border border-[#B36C34]/20">
 								{tag}
 							</span>
 						))}
@@ -93,7 +93,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 							href={url} 
 							target="_blank" 
 							rel="noopener noreferrer"
-							class="inline-block text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors border-b-2 border-orange-500/40 hover:border-orange-500 pb-1"
+							class="inline-block text-xs text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors border-b-2 border-[#B36C34]/40 hover:border-[#B36C34] pb-1"
 						>
 							Visit Project →
 						</a>
@@ -102,7 +102,7 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 			</aside>
 		</div>
 
-		<footer class="mt-24 pt-12 border-t-2 border-orange-500/20">
+		<footer class="mt-24 pt-12 border-t-2 border-[#B36C34]/20">
 			<a href="/" class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-all tracking-[0.3em] uppercase">
 				← Back to Index
 			</a>
