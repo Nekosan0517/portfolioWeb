@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 		const categoryInfo = CATEGORIES[catKey];
 		const filteredWorks = allWorks
 			.filter((work) => work.data.category === catKey)
-			.sort((a, b) => a.data.order - b.data.order);
+			.sort((a, b) => b.data.date.localeCompare(a.data.date));
 		
 		return {
 			params: { category: catKey },

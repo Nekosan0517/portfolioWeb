@@ -7,7 +7,7 @@ import WorksGrid from '../components/WorksGrid.astro';
 
 // 2. 作品データを取得して並び替える
 const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
-const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
+const sortedWorks = allWorks.sort((a, b) => b.data.date.localeCompare(a.data.date));
 
 // 3. ページの設定
 const title = "Takuma Mineta | Portfolio";

@@ -20,7 +20,7 @@ const categoriesList = Object.values(CATEGORIES);
 /**
  * 2. ソート処理
  */
-const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
+const sortedWorks = allWorks.sort((a, b) => b.data.date.localeCompare(a.data.date));
 
 // activeCategory が指定されており、かつ右側ドロワーの場合はフィルタリングを行う
 const displayWorks = (side === 'right' && activeCategory)

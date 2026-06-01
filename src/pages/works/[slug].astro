@@ -1,18 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-// BaseLayouts.astro から BaseLayout.astro への名称変更を反映
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 /**
  * 1. ページ生成パスの定義
  */
 export async function getStaticPaths() {
-	// フォルダ名を src/content/works に変更した前提です
 	const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
 	
 	return allWorks.map((entry) => ({
-		// 【重要】 type: 'data' では entry.slug ではなく entry.id を使用します
+		// type: 'data' では entry.slug ではなく entry.id を使用
 		params: { slug: entry.id },
 		props: { entry },
 	}));
@@ -26,7 +24,11 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { title, description, category, tags, url, thumbnail } = entry.data;
+const { title, description, category, tags, url, thumbnail, date } = entry.data;
+
+// "YYYY-MM" → "YYYY年M月" に整形（先頭ゼロ除去）
+const [year, month] = date.split('-');
+const displayDate = `${year}年${parseInt(month)}月`;
 ---
 
 <BaseLayout title={`${title} | Works`} activeCategory={category}>
@@ -74,9 +76,15 @@ const { title, description, category, tags, url, thumbnail } = entry.data;
 				</div>
 			</div>
 
+			<!-- サイドバー: Date → Tools → External Link の順 -->
 			<aside class="space-y-12">
 				<div>
-					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Technologies</h2>
+					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Date</h2>
+					<p class="text-sm text-[var(--text-muted)] font-light">{displayDate}</p>
+				</div>
+
+				<div>
+					<h2 class="text-[10px] font-bold text-[var(--text-subtle)] uppercase tracking-[0.2em] mb-4">Tools</h2>
 					<div class="flex flex-wrap gap-2">
 						{tags.map((tag: string) => (
 							<span class="text-[10px] text-[var(--text-muted)] px-2 py-1 bg-[var(--button-bg)] border border-[#B36C34]/20">

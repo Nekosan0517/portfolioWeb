@@ -3,27 +3,133 @@ import type { CollectionEntry } from 'astro:content';
 import WorkCard from './WorkCard.astro';
 
 interface Props {
-	works: CollectionEntry<'works'>[];
+  works: CollectionEntry<'works'>[];
 }
 
 const { works } = Astro.props;
+
+// 年ごとにグループ化（キー: "YYYY" 文字列）
+const worksByYear = works.reduce<Record<string, CollectionEntry<'works'>[]>>((acc, work) => {
+  const year = work.data.date.split('-')[0];
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(work);
+  return acc;
+}, {});
+
+// サーバーサイドのデフォルト: 降順（新しい年が先頭）
+const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
 ---
 
-{works.length > 0 ? (
-	<div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
-		{works.map((work) => (
-			<WorkCard work={work} />
-		))}
-	</div>
-) : (
-	<div class="flex flex-col items-center justify-center py-24 text-center border border-[var(--card-border)] bg-[var(--button-bg)] rounded-sm w-full">
-		<p class="text-[var(--text-subtle)] font-light tracking-wider uppercase">No works found in this category</p>
-	</div>
-)}
+<div class="w-full">
+  {works.length > 0 ? (
+    <>
+      <!-- ソートコントロールバー（-mt-16でヘッダー mb-24 の余白内に引き上げ、案Aに視覚的に近づける） -->
+      <div class="flex justify-end items-center gap-2 mb-10 -mt-16">
+        <button id="sort-desc" class="sort-btn is-active" data-sort="desc" aria-pressed="true">
+          ↓ 新しい順
+        </button>
+        <button id="sort-asc" class="sort-btn" data-sort="asc" aria-pressed="false">
+          ↑ 古い順
+        </button>
+      </div>
 
-<!--
-自己検証（バグチェック）結果
-- 構文エラーの有無: 正常（Astro 構文での条件分岐およびコンポーネントインポートにエラーなし）
-- 配列の空判定検証: works.length が 0 の際に、フォールバックとして「No works found...」が表示されることを検証済み
-- コンポーネント連携: 読み込まれた各 work オブジェクトが WorkCard に対して Props として正しく渡されることを検証済み
--->
+      <div id="works-container" class="w-full space-y-16">
+        {sortedYears.map(year => (
+          <div data-year-group={year}>
+            <!-- 年セクションヘッダー: YYYY年 ────────────────── -->
+            <div class="flex items-center gap-5 mb-10">
+              <span class="text-xs tracking-[0.5em] text-[var(--text-main)] font-light whitespace-nowrap">
+                {year}年
+              </span>
+              <div class="h-px flex-grow bg-[#B36C34]/50"></div>
+            </div>
+
+            <!-- 年内カードグリッド -->
+            <div class="works-year-grid grid grid-cols-1 md:grid-cols-2 gap-12">
+              {worksByYear[year].map(work => (
+                <WorkCard work={work} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  ) : (
+    <div class="flex flex-col items-center justify-center py-24 text-center border border-[var(--card-border)] bg-[var(--button-bg)] rounded-sm w-full">
+      <p class="text-[var(--text-subtle)] font-light tracking-wider uppercase">No works found in this category</p>
+    </div>
+  )}
+</div>
+
+<style>
+  .sort-btn {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid transparent;
+    color: var(--text-subtle);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    font-family: inherit;
+  }
+
+  .sort-btn:hover {
+    color: var(--text-main);
+  }
+
+  .sort-btn.is-active {
+    color: var(--text-main);
+    border-color: rgba(179, 108, 52, 0.55);
+  }
+</style>
+
+<script>
+  function setupSortButtons(): void {
+    const container = document.getElementById('works-container');
+    if (!container) return;
+
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.sort-btn');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sortOrder = btn.dataset.sort;
+
+        buttons.forEach(b => {
+          b.classList.remove('is-active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // 年グループ単位でソート（年グループヘッダーと中身を一体で並び替え）
+        const groups = [...container.querySelectorAll<HTMLElement>('[data-year-group]')];
+        groups.sort((a, b) => {
+          const ya = a.dataset.yearGroup ?? '';
+          const yb = b.dataset.yearGroup ?? '';
+          return sortOrder === 'desc' ? yb.localeCompare(ya) : ya.localeCompare(yb);
+        });
+
+        // 各年グループ内のカードも同方向にソート
+        groups.forEach(group => {
+          const grid = group.querySelector<HTMLElement>('.works-year-grid');
+          if (grid) {
+            const cards = [...grid.querySelectorAll<HTMLElement>('[data-date]')];
+            cards.sort((a, b) => {
+              const da = a.dataset.date ?? '';
+              const db = b.dataset.date ?? '';
+              return sortOrder === 'desc' ? db.localeCompare(da) : da.localeCompare(db);
+            });
+            cards.forEach(card => grid.appendChild(card));
+          }
+          container.appendChild(group);
+        });
+      });
+    });
+  }
+
+  // 初期化と View Transitions 後の再初期化
+  setupSortButtons();
+  document.addEventListener('astro:after-swap', setupSortButtons);
+</script>

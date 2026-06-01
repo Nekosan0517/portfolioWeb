@@ -21,8 +21,8 @@ const worksCollection = defineCollection({
     tags: z.array(z.string()),
     // 外部リンク（任意項目。URL形式であることをチェック）
     url: z.string().url().optional(),
-    // 並び順を制御する数値（デフォルト値 0）
-    order: z.number().default(0),
+    // 公開年月（YYYY-MM 形式、例: "2024-03"）
+    date: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
   }),
 });
 
