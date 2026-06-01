@@ -11,8 +11,15 @@ const worksCollection = defineCollection({
   schema: z.object({
     // 作品のタイトル
     title: z.string(),
-    // 作品の概要説明
-    description: z.string(),
+    // 作品の概要説明（段落ごとの配列）
+    descriptions: z.array(z.string()),
+    // スクリーンショット（任意）
+    photos: z.array(
+      z.object({
+        url: z.string(),
+        caption: z.string().optional(),
+      })
+    ).optional(),
     // カテゴリを限定することで、入力ミスを防ぎます
     category: z.enum(['game', 'tool', 'video']),
     // サムネイル画像（任意項目：optional）

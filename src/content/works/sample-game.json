@@ -1,6 +1,15 @@
 {
   "title": "ゲームタイトル",
-  "description": "ゲーム説明文",
+  "descriptions": [
+    "テスト用ゲームのサンプル説明文です。",
+    "Unityを使って制作されたゲームのアセットおよびゲームデザインの検証用プロジェクト。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/sample_game_1.png",
+      "caption": "サンプルゲームのタイトル画面"
+    }
+  ],
   "category": "game",
   "thumbnail": "/images/works/gametitle.jpg",
   "tags": [

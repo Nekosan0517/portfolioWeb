@@ -1,6 +1,15 @@
 {
   "title": "3Dモーショングラフィックス",
-  "description": "Blender と After Effects を使用した短編アニメーションのポートフォリオ映像。",
+  "descriptions": [
+    "Blender と After Effects を使用した短編アニメーションのポートフォリオ映像です。",
+    "物理シミュレーションとカメラワークを駆使し、ネオンの光が交錯する都市を表現しました。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/sample_video_1.png",
+      "caption": "レンダリングされた都市のワンシーン"
+    }
+  ],
   "category": "video",
   "thumbnail": "",
   "tags": ["Blender", "After Effects", "Premiere Pro"],

@@ -1,6 +1,15 @@
 {
   "title": "制作支援プラグイン",
-  "description": "開発効率を向上させるための自動化ツールおよび拡張ライブラリ。",
+  "descriptions": [
+    "開発効率を向上させるための自動化ツールおよび拡張ライブラリです。",
+    "コマンドラインユーティリティや、ビルドプロセスに統合可能なプラグイン形式のツールセット。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/sample_tool_1.png",
+      "caption": "設定画面のUI"
+    }
+  ],
   "category": "tool",
   "thumbnail": "",
   "tags": ["TypeScript", "Vite", "Node.js"],
