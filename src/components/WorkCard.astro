@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { work } = Astro.props;
-const { title, description, thumbnail, tags, date } = work.data;
+const { title, thumbnail, tags, date } = work.data;
 
 // "YYYY-MM" → "YYYY年M月" に整形（先頭ゼロ除去）
 const [year, month] = date.split('-');
@@ -38,9 +38,7 @@ const displayDate = `${year}年${parseInt(month)}月`;
 			<h3 class="text-xl font-light text-[var(--text-main)]/95 group-hover:text-black transition-colors duration-300">
 				{title}
 			</h3>
-			<p class="mt-2 text-sm text-[var(--text-muted)] line-clamp-2">
-				{description}
-			</p>
+
 			<div class="mt-4 flex flex-wrap gap-2">
 				{tags.map((tag: string) => (
 					<span class="text-[9px] px-2 py-0.5 rounded-full border border-[#D88C51]/20 text-[var(--text-muted)] bg-[var(--button-bg)]">
@@ -53,10 +51,4 @@ const displayDate = `${year}年${parseInt(month)}月`;
 </article>
 
 <style>
-	.line-clamp-2 {
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
 </style>

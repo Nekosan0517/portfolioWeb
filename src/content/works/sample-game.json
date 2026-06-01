@@ -3,7 +3,11 @@
   "description": "ゲーム説明文",
   "category": "game",
   "thumbnail": "/images/works/gametitle.jpg",
-  "tags": ["Unity", "C#", "Blender"],
+  "tags": [
+    "Unity",
+    "C#",
+    "Blender"
+  ],
   "url": "https://example.com/fantasy-train",
   "date": "2024-03"
 }

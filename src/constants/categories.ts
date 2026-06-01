@@ -1,4 +1,4 @@
-export const CATEGORY_KEYS = ['game', 'tool', 'video'] as const;
+export const CATEGORY_KEYS = ['game', 'tool', 'video', 'photo'] as const;
 export type CategoryKey = typeof CATEGORY_KEYS[number];
 
 export interface CategoryInfo {
@@ -23,6 +23,11 @@ export const CATEGORIES: Record<CategoryKey, CategoryInfo> = {
     label: 'VIDEO',
     description: '映像作品、モーショングラフィックス、モデリング動画など。',
   },
+  photo: {
+    id: 'photo',
+    label: 'PHOTO',
+    description: '写真集',
+  }
 };
 
 // ==========================================
