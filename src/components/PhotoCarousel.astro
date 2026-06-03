@@ -448,9 +448,7 @@ const { photos } = Astro.props;
 		}
 	};
 
-	// 初期ロード時の初期化処理実行
-	document.addEventListener("DOMContentLoaded", initAccordionCarousel);
-	// SPA遷移後の再初期化処理実行
+	// 初回ロード・SPA遷移後の初期化処理実行
 	document.addEventListener("astro:page-load", initAccordionCarousel);
 </script>
 
