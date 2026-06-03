@@ -35,13 +35,13 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 <BaseLayout title={`${title} | Works`} activeCategory={category}>
 	<article class="max-w-3xl mx-auto">
-		<div class="mb-8">
+		<div class="mb-8" data-reveal>
 			<a href={`/category/${category}`} class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors tracking-[0.25em] uppercase">
 				← Back to {displayCategory}
 			</a>
 		</div>
 
-		<header class="mb-12">
+		<header class="mb-12" data-reveal data-reveal-delay="100">
 			<div class="flex items-center gap-4 mb-6">
 				<span class="text-xs tracking-[0.3em] uppercase text-[var(--text-subtle)] px-3 py-1 border border-[#B36C34]/20">
 					{category}
@@ -53,7 +53,7 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			</h1>
 		</header>
 
-		<section class="mb-16 flex justify-center">
+		<section class="mb-16 flex justify-center" data-reveal data-reveal-delay="200">
 			{thumbnail ? (
 				<img 
 					src={thumbnail} 
@@ -67,7 +67,7 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 			)}
 		</section>
 
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-12" data-reveal data-reveal-delay="300">
 			<div class="md:col-span-2">
 				<h2 class="text-sm font-bold text-[var(--text-subtle)] uppercase tracking-widest mb-6 underline decoration-[#B36C34]/30 underline-offset-8">
 					Project Overview
@@ -117,12 +117,12 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 		</div>
 
 		{photos && photos.length > 0 && (
-			<section class="mt-16">
+			<section class="mt-16" data-reveal>
 				<PhotoCarousel photos={photos} />
 			</section>
 		)}
 
-		<footer class="mt-24 pt-12 border-t-2 border-[#B36C34]/20">
+		<footer class="mt-24 pt-12 border-t-2 border-[#B36C34]/20" data-reveal>
 			<a href="/works" class="text-xs text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors tracking-[0.25em] uppercase">
 				← Back to Archive
 			</a>

@@ -3,6 +3,7 @@ import NavigationDrawer from "../components/Navigation/NavigationDrawer.astro";
 import WorksIndexDrawer from "../components/Navigation/WorksIndexDrawer.astro";
 import DrawerTrigger from "../components/Navigation/DrawerButton.astro";
 import { ViewTransitions } from "astro:transitions";
+import ScrollReveal from "../components/about/ScrollReveal.astro";
 import "../styles/global.css";
 
 interface Props {
@@ -30,6 +31,7 @@ const {
 		<ViewTransitions />
 	</head>
 	<body class="bg-[var(--bg-color)] text-[var(--text-main)] overflow-x-hidden selection:bg-[#8EA5A5]/30">
+		<ScrollReveal />
 
 		<NavigationDrawer id="drawer-left" transition:persist />
 		<WorksIndexDrawer
@@ -72,13 +74,24 @@ const {
 			document.addEventListener('astro:before-preparation', () => {
 				// ドロワー開閉用クラスの除去処理
 				document.body.classList.remove('is-left-open', 'is-right-open', 'is-drawer-open');
+				// VT中のdata-reveal transition競合防止フラグの付与処理
+				document.body.classList.add('is-transitioning');
+			});
+
+			// DOMスワップ直後にis-transitioningをVT完了後に除去しrevealアニメーションが有効な状態に戻す処理
+			// VTのfade-inアニメーション(700ms)完了後に除去して競合を完全に回避
+			document.addEventListener('astro:after-swap', () => {
+				// VT transition競合防止フラグのVT完了後除去処理
+				setTimeout(() => {
+					document.body.classList.remove('is-transitioning');
+				}, 700);
 			});
 
 			// 新しいページのロード完了時、全体のフェードアウト状態クラスを確実にクリア。
 			// ページロード完了イベント監視処理
 			document.addEventListener('astro:page-load', () => {
 				// フェードアウト状態クラスの除去処理
-				document.body.classList.remove('is-fading-out');
+				document.body.classList.remove('is-fading-out', 'is-transitioning');
 			});
 		</script>
 

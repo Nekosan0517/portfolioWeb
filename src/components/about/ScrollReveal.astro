@@ -10,31 +10,6 @@
  */
 ---
 
-<style is:global>
-  /**
-   * スクロールアニメーション初期状態
-   * data-reveal属性を持つ要素はデフォルトで非表示・ぼかし状態
-   */
-  [data-reveal] {
-    opacity: 0;
-    filter: blur(12px);
-    transform: translateY(16px);
-    transition:
-      opacity 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      filter 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      transform 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  /**
-   * IntersectionObserverによるis-revealedクラス付与後の状態
-   * ぼかし・透明・オフセットをすべて解除する
-   */
-  [data-reveal].is-revealed {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0);
-  }
-</style>
 
 <script>
   /**
@@ -44,7 +19,11 @@
    * IntersectionObserver で [data-reveal] 属性の要素を監視し、
    * ビューポートに入ったタイミングで .is-revealed クラスを付与する。
    * CSS transition によりブラーと透明度が滑らかに解除される。
-   * ViewTransitionsとの競合を防ぐため astro:page-load で毎回再初期化する。
+   *
+   * [ViewTransitionsとの競合回避]
+   * astro:page-load はViewTransitionアニメーション(700ms)完了後に発火するため、
+   * VT実行中にblurアニメーションが競合する問題がない。
+   * BaseLayoutでis-transitioningクラスを使いVT中はtransitionを無効化する二重安全網も備える。
    */
   function initScrollReveal(): void {
     // 監視対象要素の取得処理
@@ -82,6 +61,10 @@
     targets.forEach((el) => observer.observe(el));
   }
 
-  // 初回ロード・ViewTransitions遷移後の再初期化処理
-  document.addEventListener('astro:page-load', initScrollReveal);
+  // ページ遷移後の初期化処理（初回ロード・SPA遷移どちらにも対応）
+  // VTのfade-inアニメーション完了後に発火するastro:page-loadを使用することで競合を回避
+  document.addEventListener('astro:page-load', () => {
+    // スクロール連動ブラー解除アニメーションの初期化処理
+    initScrollReveal();
+  });
 </script>

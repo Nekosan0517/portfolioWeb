@@ -5,7 +5,6 @@ import HeroSection from '../components/about/HeroSection.astro';
 import AboutSection from '../components/about/AboutSection.astro';
 import SkillsSection from '../components/about/SkillsSection.astro';
 import ContactSection from '../components/about/ContactSection.astro';
-import ScrollReveal from '../components/about/ScrollReveal.astro';
 
 // profile.jsonの読み込み処理
 // getEntryで型安全にaboutコレクションからプロフィールデータを取得する
@@ -14,9 +13,6 @@ const profile = profileEntry!.data;
 ---
 
 <BaseLayout title={profile.meta.title} description={profile.meta.description}>
-  <!-- スクロールリビールアニメーション制御（ページに1つ配置） -->
-  <ScrollReveal />
-
   <!-- ヒーローセクション -->
   <HeroSection hero={profile.hero} profileImage={profile.about.profileImage} />
 

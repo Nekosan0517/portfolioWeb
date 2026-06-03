@@ -25,7 +25,7 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
 <div class="w-full">
   {works.length > 0 ? (
     <>
-      <div class="flex justify-end items-center gap-2 mb-10 -mt-16">
+      <div class="flex justify-end items-center gap-2 mb-10 -mt-16" data-reveal data-reveal-delay="100">
         <button id="sort-desc" class="sort-btn is-active" data-sort="desc" aria-pressed="true">
           ↓ 新しい順
         </button>
@@ -88,6 +88,21 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
     color: var(--text-main);
     border-color: rgba(179, 108, 52, 0.55);
   }
+
+  /* ソート対象コンテナのアニメーション設定 */
+  #works-container {
+    transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                filter 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+    filter: blur(0px);
+  }
+
+  /* ソート中の非表示・ぼかし状態 */
+  #works-container.is-sorting {
+    opacity: 0;
+    filter: blur(12px);
+    transition: none;
+  }
 </style>
 
 <script>
@@ -105,6 +120,11 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
       // クリックイベントの登録処理
       btn.addEventListener('click', () => {
         const sortOrder = btn.dataset.sort;
+
+        // 一時的に非表示・ぼかし状態にするクラスの追加処理
+        container.classList.add('is-sorting');
+        // トランジションなしでの状態変更を強制反映するための強制再描画処理
+        void container.offsetHeight;
 
         // 全ボタンのアクティブ状態の解除処理
         buttons.forEach(b => {
@@ -147,6 +167,11 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
           }
           // ソート後年グループ要素の再追加（ドム並び替え）処理
           container.appendChild(group);
+        });
+
+        // 次の描画フレームで非表示・ぼかし状態を解除し、ふわっとフェードインさせる処理
+        requestAnimationFrame(() => {
+          container.classList.remove('is-sorting');
         });
       });
     });
