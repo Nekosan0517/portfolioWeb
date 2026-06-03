@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorksGrid from '../../components/WorksGrid.astro';
+
+// 全作品データの取得処理
+const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
+// 日付の降順による作品データのソート処理
+const sortedWorks = allWorks.sort((a, b) => b.data.date.localeCompare(a.data.date));
+
+const title = "Works | Takuma Mineta";
+const description = "Creative Archive — 今までの作品の記録。";
+---
+
+<BaseLayout title={title} description={description}>
+	<header class="mb-24 mt-12">
+		<h1 class="text-6xl font-extralight tracking-tighter text-[var(--text-main)] mb-4">
+			Creative <span class="font-normal italic">Archive</span>
+		</h1>
+		<p class="text-xl text-[var(--text-muted)] max-w-md leading-relaxed font-light">
+			今までの作品の記録。
+		</p>
+	</header>
+
+	<WorksGrid works={sortedWorks} />
+</BaseLayout>

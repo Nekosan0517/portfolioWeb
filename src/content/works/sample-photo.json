@@ -6,16 +6,16 @@
   ],
   "photos": [
     {
-      "url": "/images/works/sample_photo_1.png",
+      "url": "/images/works/photo/sample_photo_1.png",
       "caption": "新緑の森に差し込む木漏れ日"
     },
     {
-      "url": "/images/works/sample_photo_2.png",
+      "url": "/images/works/photo/sample_photo_2.png",
       "caption": "夕暮れ時の湖畔の静寂"
     }
   ],
   "category": "photo",
-  "thumbnail": "/images/works/sample_photo_1.png",
+  "thumbnail": "/images/works/photo/sample_photo_1.png",
   "tags": [
     "写真",
     "風景",

@@ -1,0 +1,22 @@
+{
+  "title": "VisualStudioプロジェクトファイルクリーナー",
+  "descriptions": [
+    "VisualStudioにてC/C++プロジェクトをバックアップする際のファイル整理用ツールです。",
+    "大学柄たくさんのプロジェクトを並行して行い、バックアップをする際に都度不要ファイルを削除するのが大変だったことから個人で作成。",
+    "初期はPythonで作成していたものの、ファイル指定やフォルダ指定の操作のしやすさからC#に書き換えました。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/tool/sample_tool_1.png",
+      "caption": "設定画面のUI"
+    }
+  ],
+  "category": "tool",
+  "thumbnail": "",
+  "tags": [
+    "C#",
+    "VisualStudioCode"
+  ],
+  "url": "https://example.com/helper-tool",
+  "date": "2026-04"
+}

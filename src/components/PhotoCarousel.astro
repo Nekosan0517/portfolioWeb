@@ -12,59 +12,78 @@ const { photos } = Astro.props;
 ---
 
 <details class="group-accordion border-y border-[#B36C34]/20 py-6">
-	<summary class="flex justify-between items-center cursor-pointer list-none select-none text-xs tracking-[0.2em] uppercase text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors py-2">
-		<span class="flex items-center gap-2 font-medium">
-			[Photos]
-		</span>
-		<span class="accordion-icon transition-transform duration-300 transform inline-block text-[10px]">
+	<summary
+		class="flex justify-between items-center cursor-pointer list-none select-none text-xs tracking-[0.2em] uppercase text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors py-2"
+	>
+		<span class="flex items-center gap-2 font-medium"> [Photos] </span>
+		<span
+			class="accordion-icon transition-transform duration-300 transform inline-block text-[10px]"
+		>
 			▼
 		</span>
 	</summary>
 	<div class="accordion-content">
 		<div class="pt-6 overflow-hidden">
-			<div class="carousel-container relative flex flex-col items-center gap-6 group/carousel">
+			<div
+				class="carousel-container relative flex flex-col items-center gap-6 group/carousel"
+			>
 				<div class="w-full relative flex items-center">
-					<button class="carousel-btn prev-btn absolute left-4 z-10 p-3 rounded-full bg-[var(--card-bg)] border border-[#B36C34]/30 text-[var(--text-subtle)] hover:text-[var(--text-main)] hover:border-[#B36C34] opacity-0 group-hover/carousel:opacity-100 focus:opacity-100 transition-opacity duration-300" aria-label="Previous photo">
+					<button
+						class="carousel-btn prev-btn absolute left-4 z-10 p-3 rounded-full bg-[var(--card-bg)] border border-[#B36C34]/30 text-[var(--text-subtle)] hover:text-[var(--text-main)] hover:border-[#B36C34] opacity-0 group-hover/carousel:opacity-100 focus:opacity-100 transition-opacity duration-300"
+						aria-label="Previous photo"
+					>
 						&larr;
 					</button>
-					<div class="carousel-viewport w-full flex gap-6 overflow-x-auto py-2">
-						{photos.map((photo, index) => (
-							<div class="carousel-item flex-none w-full flex flex-col items-center justify-center">
-								<div class="w-full h-[480px] flex items-center justify-center relative">
-									<img
-										src={photo.url}
-										alt={photo.caption || `Photo ${index + 1}`}
-										class="max-w-full max-h-full object-contain border border-[#B36C34]/10 rounded-sm shadow-sm bg-[var(--card-bg)]"
-										onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-									/>
-									<div class="hidden absolute inset-0 flex items-center justify-center text-[var(--text-subtle)]/20 uppercase tracking-[0.3em] text-[10px]">
-										Image Sandbox / No Preview
+					<div
+						class="carousel-viewport w-full flex gap-6 overflow-x-auto py-2"
+					>
+						{
+							photos.map((photo, index) => (
+								<div class="carousel-item flex-none w-full flex flex-col items-center justify-center">
+									<div class="w-full h-[480px] flex items-center justify-center relative">
+										<img
+											src={photo.url}
+											alt={
+												photo.caption ||
+												`Photo ${index + 1}`
+											}
+											class="max-w-full max-h-full object-contain border border-[#B36C34]/10 rounded-sm shadow-sm bg-[var(--card-bg)]"
+											onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+										/>
+										<div class="hidden absolute inset-0 items-center justify-center text-[var(--text-subtle)]/20 uppercase tracking-[0.3em] text-[10px]">
+											Image Sandbox / No Preview
+										</div>
 									</div>
+									{photo.caption && (
+										<p class="mt-3 text-xs text-[var(--text-muted)] tracking-wider">
+											{photo.caption}
+										</p>
+									)}
 								</div>
-								{photo.caption && (
-									<p class="mt-3 text-xs text-[var(--text-muted)] tracking-wider">
-										{photo.caption}
-									</p>
-								)}
-							</div>
-						))}
+							))
+						}
 					</div>
-					<button class="carousel-btn next-btn absolute right-4 z-10 p-3 rounded-full bg-[var(--card-bg)] border border-[#B36C34]/30 text-[var(--text-subtle)] hover:text-[var(--text-main)] hover:border-[#B36C34] opacity-0 group-hover/carousel:opacity-100 focus:opacity-100 transition-opacity duration-300" aria-label="Next photo">
+					<button
+						class="carousel-btn next-btn absolute right-4 z-10 p-3 rounded-full bg-[var(--card-bg)] border border-[#B36C34]/30 text-[var(--text-subtle)] hover:text-[var(--text-main)] hover:border-[#B36C34] opacity-0 group-hover/carousel:opacity-100 focus:opacity-100 transition-opacity duration-300"
+						aria-label="Next photo"
+					>
 						&rarr;
 					</button>
 				</div>
 
-				{photos.length > 1 && (
-					<div class="carousel-indicators flex justify-center gap-3 py-2">
-						{photos.map((_, index) => (
-							<button
-								class="indicator-dot"
-								data-index={index}
-								aria-label={`Go to photo ${index + 1}`}
-							/>
-						))}
-					</div>
-				)}
+				{
+					photos.length > 1 && (
+						<div class="carousel-indicators flex justify-center gap-3 py-2">
+							{photos.map((_, index) => (
+								<button
+									class="indicator-dot"
+									data-index={index}
+									aria-label={`Go to photo ${index + 1}`}
+								/>
+							))}
+						</div>
+					)
+				}
 			</div>
 		</div>
 	</div>
@@ -73,15 +92,25 @@ const { photos } = Astro.props;
 <script>
 	// アコーディオンおよびカルーセル初期化処理のセットアップ
 	const initAccordionCarousel = () => {
-		const accordion = document.querySelector('details.group-accordion') as HTMLDetailsElement;
+		const accordion = document.querySelector(
+			"details.group-accordion",
+		) as HTMLDetailsElement;
 		if (!accordion) return;
 
-		const summary = accordion.querySelector('summary');
-		const content = accordion.querySelector('.accordion-content') as HTMLElement;
-		const viewport = accordion.querySelector('.carousel-viewport') as HTMLElement;
-		const prevBtn = accordion.querySelector('.prev-btn') as HTMLButtonElement;
-		const nextBtn = accordion.querySelector('.next-btn') as HTMLButtonElement;
-		const icon = accordion.querySelector('.accordion-icon') as HTMLElement;
+		const summary = accordion.querySelector("summary");
+		const content = accordion.querySelector(
+			".accordion-content",
+		) as HTMLElement;
+		const viewport = accordion.querySelector(
+			".carousel-viewport",
+		) as HTMLElement;
+		const prevBtn = accordion.querySelector(
+			".prev-btn",
+		) as HTMLButtonElement;
+		const nextBtn = accordion.querySelector(
+			".next-btn",
+		) as HTMLButtonElement;
+		const icon = accordion.querySelector(".accordion-icon") as HTMLElement;
 
 		if (!summary || !content || !viewport) return;
 
@@ -91,11 +120,13 @@ const { photos } = Astro.props;
 		// [非自明ロジックの機能解説]
 		// AstroのSPA遷移（ViewTransitions）などによるスクリプト再実行時、
 		// viewport 内に無限スクロール用のクローン要素が二重に挿入されるのを防ぐための事前削除。
-		const existingClones = viewport.querySelectorAll('.is-clone');
+		const existingClones = viewport.querySelectorAll(".is-clone");
 		// 既存クローンのループ処理による削除
 		existingClones.forEach((clone) => clone.remove());
 
-		const items = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
+		const items = Array.from(
+			viewport.querySelectorAll(".carousel-item"),
+		) as HTMLElement[];
 		const total = items.length;
 		const hasCarousel = total > 1;
 
@@ -103,7 +134,7 @@ const { photos } = Astro.props;
 		let allItems = items;
 
 		// インジケータードット全要素の取得処理
-		const dots = accordion.querySelectorAll('.indicator-dot');
+		const dots = accordion.querySelectorAll(".indicator-dot");
 
 		// [非自明ロジックの機能解説]
 		// インデックスがクローン要素（両端）に到達した瞬間、スクロールアニメーションなしで
@@ -123,7 +154,7 @@ const { photos } = Astro.props;
 		const updateState = () => {
 			if (!hasCarousel) return;
 			const scrollLeft = viewport.scrollLeft;
-			
+
 			let closestIndex = currentIndex;
 			let minDiff = Infinity;
 			// スクロール位置と各スライドの距離比較処理
@@ -147,9 +178,9 @@ const { photos } = Astro.props;
 			// ドット状態（アクティブクラス）の切り替え処理
 			dots.forEach((dot, idx) => {
 				if (idx === realIndex) {
-					dot.classList.add('is-active');
+					dot.classList.add("is-active");
 				} else {
-					dot.classList.remove('is-active');
+					dot.classList.remove("is-active");
 				}
 			});
 		};
@@ -162,13 +193,13 @@ const { photos } = Astro.props;
 			if (!hasCarousel || isScrolling) return;
 			isScrolling = true;
 
-			viewport.style.scrollSnapType = 'none';
+			viewport.style.scrollSnapType = "none";
 
 			const startLeft = viewport.scrollLeft;
 			const targetItem = allItems[targetIndex];
 			if (!targetItem) {
 				isScrolling = false;
-				viewport.style.scrollSnapType = 'x mandatory';
+				viewport.style.scrollSnapType = "x mandatory";
 				return;
 			}
 
@@ -176,14 +207,16 @@ const { photos } = Astro.props;
 			const change = targetLeft - startLeft;
 			const startTime = performance.now();
 
-			const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+			const easeInOutQuad = (t: number) =>
+				t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
 			// アニメーション進捗に応じたスクロール位置更新処理
 			const animateScroll = (currentTime: number) => {
 				const elapsed = currentTime - startTime;
 				const progress = Math.min(elapsed / duration, 1);
-				
-				viewport.scrollLeft = startLeft + change * easeInOutQuad(progress);
+
+				viewport.scrollLeft =
+					startLeft + change * easeInOutQuad(progress);
 
 				if (progress < 1) {
 					// 次フレームのアニメーション描画要求処理
@@ -191,11 +224,11 @@ const { photos } = Astro.props;
 				} else {
 					viewport.scrollLeft = targetLeft;
 					currentIndex = targetIndex;
-					
+
 					// クローン到達時のループワープ処理の実行
 					handleLoopWrap();
-					
-					viewport.style.scrollSnapType = 'x mandatory';
+
+					viewport.style.scrollSnapType = "x mandatory";
 					isScrolling = false;
 					// アクティブ状態の更新処理の実行
 					updateState();
@@ -211,7 +244,7 @@ const { photos } = Astro.props;
 			if (!hasCarousel) return;
 			const targetItem = allItems[currentIndex];
 			if (!targetItem) return;
-			
+
 			if (smooth) {
 				// なめらかなスクロール処理の実行
 				smoothScrollTo(currentIndex, 750);
@@ -219,9 +252,9 @@ const { photos } = Astro.props;
 				// [非自明ロジックの機能解説]
 				// 初期位置へ瞬時に移動する際、CSSのスクロールスナップ定義 (scroll-snap-type) と
 				// JSのスクロール位置設定との競合による位置ズレを防ぐため、一時的にスナップを無効化。
-				viewport.style.scrollSnapType = 'none';
+				viewport.style.scrollSnapType = "none";
 				viewport.scrollLeft = targetItem.offsetLeft;
-				viewport.style.scrollSnapType = 'x mandatory';
+				viewport.style.scrollSnapType = "x mandatory";
 			}
 		};
 
@@ -231,64 +264,78 @@ const { photos } = Astro.props;
 			// ループカルーセル用クローン作成処理
 			const firstClone = items[0].cloneNode(true) as HTMLElement;
 			const lastClone = items[total - 1].cloneNode(true) as HTMLElement;
-			firstClone.classList.add('is-clone');
-			lastClone.classList.add('is-clone');
+			firstClone.classList.add("is-clone");
+			lastClone.classList.add("is-clone");
 
 			// クローン要素のドム挿入処理
 			viewport.insertBefore(lastClone, items[0]);
 			viewport.appendChild(firstClone);
 
-			allItems = Array.from(viewport.querySelectorAll('.carousel-item')) as HTMLElement[];
+			allItems = Array.from(
+				viewport.querySelectorAll(".carousel-item"),
+			) as HTMLElement[];
 		}
 
 		// アコーディオン開閉イベントのリスナー登録処理
-		summary.addEventListener('click', (e) => {
+		summary.addEventListener("click", (e) => {
 			// デフォルト挙動の無効化
 			e.preventDefault();
 			if (isAnimating) return;
 
 			isAnimating = true;
 
-			if (accordion.hasAttribute('open')) {
-				accordion.classList.remove('is-open');
-				if (icon) icon.style.transform = 'rotate(0deg)';
-				
+			if (accordion.hasAttribute("open")) {
+				accordion.classList.remove("is-open");
+				if (icon) icon.style.transform = "rotate(0deg)";
+
 				// トランジション終了イベントのリスナー登録処理
-				content.addEventListener('transitionend', function onTransitionEnd(event: TransitionEvent) {
-					if (event.propertyName === 'grid-template-rows') {
-						accordion.removeAttribute('open');
-						isAnimating = false;
-						// リスナー解除処理
-						content.removeEventListener('transitionend', onTransitionEnd);
-					}
-				});
+				content.addEventListener(
+					"transitionend",
+					function onTransitionEnd(event: TransitionEvent) {
+						if (event.propertyName === "grid-template-rows") {
+							accordion.removeAttribute("open");
+							isAnimating = false;
+							// リスナー解除処理
+							content.removeEventListener(
+								"transitionend",
+								onTransitionEnd,
+							);
+						}
+					},
+				);
 			} else {
-				accordion.setAttribute('open', 'true');
-				if (icon) icon.style.transform = 'rotate(180deg)';
-				
+				accordion.setAttribute("open", "true");
+				if (icon) icon.style.transform = "rotate(180deg)";
+
 				// アニメーションフレーム要求処理
 				requestAnimationFrame(() => {
 					// アニメーションフレーム要求処理
 					requestAnimationFrame(() => {
-						accordion.classList.add('is-open');
+						accordion.classList.add("is-open");
 					});
 				});
 
 				// トランジション終了イベントのリスナー登録処理
-				content.addEventListener('transitionend', function onTransitionEnd(event: TransitionEvent) {
-					if (event.propertyName === 'grid-template-rows') {
-						isAnimating = false;
-						// リスナー解除処理
-						content.removeEventListener('transitionend', onTransitionEnd);
-						
-						if (hasCarousel) {
-							// スクロール位置制御処理の実行
-							scrollToCurrentIndex(false);
-							// アクティブ状態の更新処理の実行
-							updateState();
+				content.addEventListener(
+					"transitionend",
+					function onTransitionEnd(event: TransitionEvent) {
+						if (event.propertyName === "grid-template-rows") {
+							isAnimating = false;
+							// リスナー解除処理
+							content.removeEventListener(
+								"transitionend",
+								onTransitionEnd,
+							);
+
+							if (hasCarousel) {
+								// スクロール位置制御処理の実行
+								scrollToCurrentIndex(false);
+								// アクティブ状態の更新処理の実行
+								updateState();
+							}
 						}
-					}
-				});
+					},
+				);
 			}
 		});
 
@@ -324,19 +371,19 @@ const { photos } = Astro.props;
 
 		if (hasCarousel && prevBtn && nextBtn) {
 			if (dots.length <= 1) {
-				prevBtn.style.display = 'none';
-				nextBtn.style.display = 'none';
+				prevBtn.style.display = "none";
+				nextBtn.style.display = "none";
 			}
 
 			// 前へボタンのクリックイベント登録処理
-			prevBtn.addEventListener('click', () => {
+			prevBtn.addEventListener("click", () => {
 				if (isScrolling) return;
 				// 1つ前のスライドへのスクロール遷移処理
 				smoothScrollTo(currentIndex - 1, 750);
 			});
 
 			// 次へボタンのクリックイベント登録処理
-			nextBtn.addEventListener('click', () => {
+			nextBtn.addEventListener("click", () => {
 				if (isScrolling) return;
 				// 1つ先のスライドへのスクロール遷移処理
 				smoothScrollTo(currentIndex + 1, 750);
@@ -345,9 +392,12 @@ const { photos } = Astro.props;
 			// インジケータードットのクリックイベント登録処理
 			dots.forEach((dot) => {
 				// ドットのクリックイベント登録処理
-				dot.addEventListener('click', () => {
+				dot.addEventListener("click", () => {
 					if (isScrolling) return;
-					const index = parseInt(dot.getAttribute('data-index') || '0', 10);
+					const index = parseInt(
+						dot.getAttribute("data-index") || "0",
+						10,
+					);
 					// 該当インデックススライドへのスクロール遷移処理
 					smoothScrollTo(index + 1, 750);
 				});
@@ -355,33 +405,37 @@ const { photos } = Astro.props;
 
 			let scrollTimeout: number;
 			// カルーセルのスクロールイベント登録処理
-			viewport.addEventListener('scroll', () => {
-				// インジケーター表示の更新処理
-				updateState();
-				if (isScrolling) return;
+			viewport.addEventListener(
+				"scroll",
+				() => {
+					// インジケーター表示の更新処理
+					updateState();
+					if (isScrolling) return;
 
-				// 遅延タイマークリア処理
-				clearTimeout(scrollTimeout);
-				// 一定時間スクロール停止検知時の座標補正遅延実行処理
-				scrollTimeout = window.setTimeout(handleScrollEnd, 150);
-			}, { passive: true });
+					// 遅延タイマークリア処理
+					clearTimeout(scrollTimeout);
+					// 一定時間スクロール停止検知時の座標補正遅延実行処理
+					scrollTimeout = window.setTimeout(handleScrollEnd, 150);
+				},
+				{ passive: true },
+			);
 
 			// カルーセルのスクロール終了イベント登録処理
-			viewport.addEventListener('scrollend', handleScrollEnd);
+			viewport.addEventListener("scrollend", handleScrollEnd);
 
-			if (accordion.hasAttribute('open')) {
+			if (accordion.hasAttribute("open")) {
 				// 初期オープン時のカレント位置へのスクロール遷移処理
 				scrollToCurrentIndex(false);
 				// インジケーター表示の更新処理
 				updateState();
 			}
-			
+
 			// リサイズ検知用オブザーバーのインスタンス化処理
 			const resizeObserver = new ResizeObserver(() => {
 				if (!isScrolling) {
-					viewport.style.scrollSnapType = 'none';
+					viewport.style.scrollSnapType = "none";
 					viewport.scrollLeft = allItems[currentIndex].offsetLeft;
-					viewport.style.scrollSnapType = 'x mandatory';
+					viewport.style.scrollSnapType = "x mandatory";
 					// インジケーター表示の更新処理
 					updateState();
 				}
@@ -389,15 +443,15 @@ const { photos } = Astro.props;
 			// リサイズ監視対象要素の登録処理
 			resizeObserver.observe(viewport);
 		} else {
-			if (prevBtn) prevBtn.style.display = 'none';
-			if (nextBtn) nextBtn.style.display = 'none';
+			if (prevBtn) prevBtn.style.display = "none";
+			if (nextBtn) nextBtn.style.display = "none";
 		}
 	};
 
 	// 初期ロード時の初期化処理実行
-	document.addEventListener('DOMContentLoaded', initAccordionCarousel);
+	document.addEventListener("DOMContentLoaded", initAccordionCarousel);
 	// SPA遷移後の再初期化処理実行
-	document.addEventListener('astro:page-load', initAccordionCarousel);
+	document.addEventListener("astro:page-load", initAccordionCarousel);
 </script>
 
 <style>
@@ -419,11 +473,11 @@ const { photos } = Astro.props;
 		grid-template-rows: 0fr;
 		transition: grid-template-rows 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 	}
-	
+
 	details.is-open .accordion-content {
 		grid-template-rows: 1fr;
 	}
-	
+
 	details.group-accordion summary::-webkit-details-marker {
 		display: none;
 	}
@@ -449,13 +503,13 @@ const { photos } = Astro.props;
 	}
 
 	.indicator-dot:hover {
-		border-color: #B36C34;
+		border-color: #b36c34;
 		background-color: rgba(179, 108, 52, 0.15);
 	}
 
 	.indicator-dot.is-active {
-		background-color: #B36C34;
-		border-color: #B36C34;
+		background-color: #b36c34;
+		border-color: #b36c34;
 		transform: scale(1.25);
 	}
 </style>

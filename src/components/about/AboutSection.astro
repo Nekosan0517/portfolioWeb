@@ -1,0 +1,162 @@
+---
+/**
+ * AboutSection コンポーネント
+ * profile.json の about データを受け取り、自己紹介テキストとプロフィール画像を表示する
+ * デスクトップ: 左テキスト + 右画像の2カラム
+ * モバイル: 縦積みレイアウト
+ */
+
+interface Props {
+  /** Aboutセクション表示データ（profile.json の about フィールド） */
+  about: {
+    profileImage: string;
+    paragraphs: string[];
+  };
+}
+
+const { about } = Astro.props;
+---
+
+<section class="about-section" aria-label="自己紹介">
+  <!-- セクション見出しライン -->
+  <div class="section-header" data-reveal>
+    <span class="section-label">About</span>
+    <span class="section-line" aria-hidden="true"></span>
+  </div>
+
+  <div class="about-grid">
+    <!-- 左カラム: テキスト -->
+    <div class="about-text">
+      {about.paragraphs.map((paragraph, i) => (
+        <p
+          class="about-paragraph"
+          data-reveal
+          data-reveal-delay={String(i * 120)}
+        >
+          {paragraph}
+        </p>
+      ))}
+    </div>
+
+    <!-- 右カラム: プロフィール画像 -->
+    <div class="about-image-wrap" data-reveal data-reveal-delay="200">
+      <div class="about-image-frame">
+        <img
+          src={about.profileImage}
+          alt="嶺田拓磨のプロフィールイラスト"
+          class="about-image"
+          loading="lazy"
+          decoding="async"
+          width="400"
+          height="400"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Aboutセクション全体 */
+  .about-section {
+    padding: 5rem 0;
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* セクション見出し（ラベル + 装飾ライン） */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  /* セクションラベルテキスト */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  /* セクション区切りライン */
+  .section-line {
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+  }
+
+  /* 2カラムグリッド（デスクトップ） */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  /* テキストカラム */
+  .about-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+  }
+
+  /* 自己紹介段落 */
+  .about-paragraph {
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    font-weight: 300;
+    line-height: 2;
+    color: var(--text-muted);
+    margin: 0;
+    font-family: 'Noto Sans JP', 'Inter', sans-serif;
+  }
+
+  /* 画像フレーム（アースカラーのボーダー） */
+  .about-image-frame {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    aspect-ratio: 1 / 1;
+  }
+
+  /* 画像フレームの装飾オフセット枠 */
+  .about-image-frame::before {
+    content: '';
+    position: absolute;
+    inset: -8px -8px 8px 8px;
+    border: 1px solid var(--button-border);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* プロフィール画像 */
+  .about-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    padding: 1rem;
+    background: var(--bg-color);
+  }
+
+  /* モバイル: 縦積みレイアウト */
+  @media (max-width: 768px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    /* モバイルでは画像を先に表示 */
+    .about-image-wrap {
+      order: -1;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+  }
+</style>

@@ -7,11 +7,11 @@
   ],
   "photos": [
     {
-      "url": "/images/works/map_editor_1.png",
+      "url": "/images/works/tool/map_editor_1.png",
       "caption": "マップエディタの操作画面（タイル配置）"
     },
     {
-      "url": "/images/works/map_editor_2.png",
+      "url": "/images/works/tool/map_editor_2.png",
       "caption": "出力されたエクセルデータと結合されたスプライトシート"
     }
   ],

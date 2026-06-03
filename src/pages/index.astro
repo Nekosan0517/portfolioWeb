@@ -1,26 +1,31 @@
 ---
-import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WorksGrid from '../components/WorksGrid.astro';
+import HeroSection from '../components/about/HeroSection.astro';
+import AboutSection from '../components/about/AboutSection.astro';
+import SkillsSection from '../components/about/SkillsSection.astro';
+import ContactSection from '../components/about/ContactSection.astro';
+import ScrollReveal from '../components/about/ScrollReveal.astro';
 
-// 全作品データの取得処理
-const allWorks: CollectionEntry<'works'>[] = await getCollection('works');
-// 日付の降順による作品データのソート処理
-const sortedWorks = allWorks.sort((a, b) => b.data.date.localeCompare(a.data.date));
-
-const title = "Takuma Mineta | Portfolio";
+// profile.jsonの読み込み処理
+// getEntryで型安全にaboutコレクションからプロフィールデータを取得する
+const profileEntry = await getEntry('about', 'profile');
+const profile = profileEntry!.data;
 ---
 
-<BaseLayout title={title}>
-	<header class="mb-24 mt-12">
-		<h1 class="text-6xl font-extralight tracking-tighter text-[var(--text-main)] mb-4">
-			Creative <span class="font-normal italic">Archive</span>
-		</h1>
-		<p class="text-xl text-[var(--text-muted)] max-w-md leading-relaxed font-light">
-			今までの作品の記録。
-		</p>
-	</header>
+<BaseLayout title={profile.meta.title} description={profile.meta.description}>
+  <!-- スクロールリビールアニメーション制御（ページに1つ配置） -->
+  <ScrollReveal />
 
-	<WorksGrid works={sortedWorks} />
+  <!-- ヒーローセクション -->
+  <HeroSection hero={profile.hero} />
+
+  <!-- 自己紹介セクション -->
+  <AboutSection about={profile.about} />
+
+  <!-- スキルセクション -->
+  <SkillsSection skills={profile.skills} />
+
+  <!-- コンタクトセクション -->
+  <ContactSection contact={profile.contact} />
 </BaseLayout>

@@ -1,0 +1,22 @@
+{
+  "title": "Serial通信-OSC通信変換ソフト",
+  "descriptions": [
+    "SchooMy社でのインターンシップにて、開発業務を円滑に行うために作成。",
+    "デバッグ作業における業務のためのUI設計に注力。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/tool/sample_tool_1.png",
+      "caption": "設定画面のUI"
+    }
+  ],
+  "category": "tool",
+  "thumbnail": "",
+  "tags": [
+    "Python",
+    "OSC",
+    "Serial"
+  ],
+  "url": "https://example.com/helper-tool",
+  "date": "2025-06"
+}

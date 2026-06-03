@@ -1,0 +1,209 @@
+---
+/**
+ * ContactSection コンポーネント
+ * profile.json の contact 配列を受け取りレンダリングする
+ * type フィールド（"email" | "github" | "twitter" | "link"）でアイコンを切り替える拡張可能な設計
+ * JSONに要素を追加するだけで自動的にリンクが増える
+ */
+
+interface ContactItem {
+  label: string;
+  /** アイコン種別: "email" | "github" | "twitter" | "link" など */
+  type: string;
+  value: string;
+  href: string;
+}
+
+interface Props {
+  /** コンタクト情報配列（profile.json の contact フィールド） */
+  contact: ContactItem[];
+}
+
+const { contact } = Astro.props;
+
+/**
+ * type に対応するSVGアイコンパスデータ取得処理
+ * 新しいtypeを追加する場合はここにcaseを追加するだけでよい
+ */
+function getIconPath(type: string): string {
+  switch (type) {
+    case 'email':
+      return 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z';
+    case 'github':
+      return 'M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z';
+    case 'twitter':
+      return 'M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z';
+    default:
+      return 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14';
+  }
+}
+---
+
+<section class="contact-section" aria-label="コンタクト">
+  <!-- セクション見出しライン -->
+  <div class="section-header" data-reveal>
+    <span class="section-label">Contact</span>
+    <span class="section-line" aria-hidden="true"></span>
+  </div>
+
+  <!-- コンタクトリンク一覧 -->
+  <ul class="contact-list" role="list">
+    {contact.map((item, i) => (
+      <li
+        class="contact-item"
+        data-reveal
+        data-reveal-delay={String(i * 100)}
+      >
+        <a
+          href={item.href}
+          class="contact-link"
+          aria-label={`${item.label}: ${item.value}`}
+          target={item.type !== 'email' ? '_blank' : undefined}
+          rel={item.type !== 'email' ? 'noopener noreferrer' : undefined}
+        >
+          <!-- typeに応じたSVGアイコン -->
+          <svg
+            class="contact-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d={getIconPath(item.type)} />
+          </svg>
+
+          <span class="contact-info">
+            <span class="contact-label">{item.label}</span>
+            <span class="contact-value">{item.value}</span>
+          </span>
+
+          <!-- 右矢印装飾 -->
+          <span class="contact-arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  /* コンタクトセクション全体 */
+  .contact-section {
+    padding: 5rem 0 8rem;
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* セクション見出し（共通） */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  .section-line {
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+  }
+
+  /* コンタクトリスト */
+  .contact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* 各コンタクトアイテム */
+  .contact-item {
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .contact-item:first-child {
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* コンタクトリンク */
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 300ms ease, padding-left 300ms ease;
+  }
+
+  .contact-link:hover {
+    color: var(--text-main);
+    padding-left: 0.5rem;
+  }
+
+  /* アイコン */
+  .contact-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--accent-color);
+  }
+
+  /* ラベルと値の縦並びグループ */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+  }
+
+  /* コンタクト種別ラベル（Email, GitHub など） */
+  .contact-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* コンタクト値（メールアドレスなど） */
+  .contact-value {
+    font-size: 0.95rem;
+    font-weight: 300;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+  }
+
+  /* 右矢印装飾 */
+  .contact-arrow {
+    font-size: 1rem;
+    color: var(--text-subtle);
+    transition: transform 300ms ease, color 300ms ease;
+  }
+
+  .contact-link:hover .contact-arrow {
+    transform: translateX(6px);
+    color: var(--line-color);
+  }
+
+  /* モバイル調整 */
+  @media (max-width: 640px) {
+    .contact-link {
+      gap: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "title": "Takuma Mineta | Portfolio",
+    "description": "知らないことこそ楽しめる"
+  },
+  "hero": {
+    "nameJa": "嶺田 拓磨",
+    "nameEn": "Mineta Takuma",
+    "catchcopy": "知らないことこそ楽しめる"
+  },
+  "about": {
+    "profileImage": "/images/profile/Face.png",
+    "paragraphs": [
+      "小さい頃から、手に入れたものはとにかく分解してきた。壊れてもいい、中身が見たい——そんな好奇心が、今の自分のベースにある。",
+      "機械の仕組みを追いかけているうちに、プログラミングと出会い、ゲーム制作や映像表現、ツール開発へと興味が広がっていった。「知らないことに出会うたびに楽しくなる」という感覚は、今も変わっていない。",
+      "ものを作ることで、誰かの「面白い」や「便利」を生み出していきたい。"
+    ]
+  },
+  "skills": [
+    {
+      "category": "Programming",
+      "items": ["C", "C++", "C#", "Python", "JavaScript"]
+    },
+    {
+      "category": "Engine / Platform",
+      "items": ["Unity", "Unreal Engine"]
+    }
+  ],
+  "contact": [
+    {
+      "label": "Email",
+      "type": "email",
+      "value": "takutakubon0517@gmail.com",
+      "href": "mailto:takutakubon0517@gmail.com"
+    }
+  ]
+}

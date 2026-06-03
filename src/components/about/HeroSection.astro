@@ -1,0 +1,142 @@
+---
+/**
+ * HeroSection コンポーネント
+ * profile.json の hero データを受け取り、ページ最上部に表示する
+ * 氏名・英語名・キャッチコピーを大きなタイポグラフィで表現する
+ */
+
+interface Props {
+  /** ヒーローセクション表示データ（profile.json の hero フィールド） */
+  hero: {
+    nameJa: string;
+    nameEn: string;
+    catchcopy: string;
+  };
+}
+
+const { hero } = Astro.props;
+---
+
+<section class="hero-section" aria-label="ヒーロー">
+  <!-- 背景装飾: ラジアルグラデーション -->
+  <div class="hero-bg" aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <!-- キャッチコピー -->
+    <p class="hero-catchcopy" data-reveal data-reveal-delay="0">
+      {hero.catchcopy}
+    </p>
+
+    <!-- 日本語名 -->
+    <h1 class="hero-name-ja" data-reveal data-reveal-delay="150">
+      {hero.nameJa}
+    </h1>
+
+    <!-- 英語名 -->
+    <p class="hero-name-en" data-reveal data-reveal-delay="280">
+      {hero.nameEn}
+    </p>
+
+    <!-- スクロール促進ライン -->
+    <div class="hero-scroll-indicator" data-reveal data-reveal-delay="500" aria-hidden="true">
+      <span class="hero-scroll-line"></span>
+      <span class="hero-scroll-label">scroll</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ヒーローセクション全体レイアウト */
+  .hero-section {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 6rem 0 4rem;
+  }
+
+  /* 背景ラジアルグラデーション装飾 */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 80% 40%, rgba(179, 108, 52, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 20% 70%, rgba(150, 118, 97, 0.06) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  /* ヒーローコンテンツ配置 */
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* キャッチコピー */
+  .hero-catchcopy {
+    font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* 日本語氏名（メイン見出し） */
+  .hero-name-ja {
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1;
+    font-family: 'Noto Serif JP', 'Georgia', serif;
+  }
+
+  /* 英語名 */
+  .hero-name-en {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* スクロール促進インジケーター */
+  .hero-scroll-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  /* スクロール促進ライン（アニメーション付き） */
+  .hero-scroll-line {
+    display: block;
+    width: 48px;
+    height: 1px;
+    background: var(--line-color);
+    animation: scroll-line-pulse 2.4s ease-in-out infinite;
+    transform-origin: left center;
+  }
+
+  /* スクロール促進ラベル */
+  .hero-scroll-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* スクロールラインの点滅アニメーション */
+  @keyframes scroll-line-pulse {
+    0%, 100% { opacity: 0.3; transform: scaleX(1); }
+    50%       { opacity: 1;   transform: scaleX(1.4); }
+  }
+</style>

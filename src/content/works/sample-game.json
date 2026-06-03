@@ -6,12 +6,12 @@
   ],
   "photos": [
     {
-      "url": "/images/works/sample_game_1.png",
+      "url": "/images/works/game/sample_game_1.png",
       "caption": "サンプルゲームのタイトル画面"
     }
   ],
   "category": "game",
-  "thumbnail": "/images/works/gametitle.jpg",
+  "thumbnail": "/images/works/game/gametitle.jpg",
   "tags": [
     "Unity",
     "C#",

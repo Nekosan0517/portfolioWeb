@@ -1,0 +1,146 @@
+---
+/**
+ * SkillsSection コンポーネント
+ * profile.json の skills 配列を受け取り、カテゴリ別にタグ形式で表示する
+ * skills 配列に要素を追加するだけで自動的に行が増える拡張可能な設計
+ */
+
+interface SkillGroup {
+  category: string;
+  items: string[];
+}
+
+interface Props {
+  /** スキルカテゴリ配列（profile.json の skills フィールド） */
+  skills: SkillGroup[];
+}
+
+const { skills } = Astro.props;
+---
+
+<section class="skills-section" aria-label="スキル">
+  <!-- セクション見出しライン -->
+  <div class="section-header" data-reveal>
+    <span class="section-label">Skills</span>
+    <span class="section-line" aria-hidden="true"></span>
+  </div>
+
+  <!-- カテゴリ別スキルグループ -->
+  <div class="skills-list">
+    {skills.map((group, groupIndex) => (
+      <div
+        class="skill-group"
+        data-reveal
+        data-reveal-delay={String(groupIndex * 120)}
+      >
+        <!-- カテゴリ名 -->
+        <h3 class="skill-category">{group.category}</h3>
+
+        <!-- スキルタグ群 -->
+        <ul class="skill-tags" role="list" aria-label={`${group.category}のスキル一覧`}>
+          {group.items.map((item) => (
+            <li class="skill-tag">{item}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  /* スキルセクション全体 */
+  .skills-section {
+    padding: 5rem 0;
+    border-top: 1px solid var(--card-border);
+  }
+
+  /* セクション見出し（AboutSectionと共通スタイル） */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+  }
+
+  .section-line {
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+  }
+
+  /* スキルグループ一覧 */
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  /* 各カテゴリグループ */
+  .skill-group {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* カテゴリ名 */
+  .skill-category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding-top: 0.3rem;
+  }
+
+  /* スキルタグリスト */
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 個別スキルタグ */
+  .skill-tag {
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    font-family: 'Inter', 'JetBrains Mono', monospace;
+    transition: border-color 250ms ease, color 250ms ease;
+  }
+
+  /* タグホバーエフェクト */
+  .skill-tag:hover {
+    border-color: var(--line-color);
+    color: var(--text-main);
+  }
+
+  /* モバイル: 縦積みレイアウト */
+  @media (max-width: 640px) {
+    .skill-group {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+</style>
