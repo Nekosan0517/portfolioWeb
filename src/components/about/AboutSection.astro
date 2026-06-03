@@ -24,8 +24,8 @@ const { about } = Astro.props;
     <span class="section-line" aria-hidden="true"></span>
   </div>
 
-  <div class="about-grid">
-    <!-- 左カラム: テキスト -->
+  <div class="about-content">
+    <!-- テキストコンテンツ -->
     <div class="about-text">
       {about.paragraphs.map((paragraph, i) => (
         <p
@@ -36,21 +36,6 @@ const { about } = Astro.props;
           {paragraph}
         </p>
       ))}
-    </div>
-
-    <!-- 右カラム: プロフィール画像 -->
-    <div class="about-image-wrap" data-reveal data-reveal-delay="200">
-      <div class="about-image-frame">
-        <img
-          src={about.profileImage}
-          alt="嶺田拓磨のプロフィールイラスト"
-          class="about-image"
-          loading="lazy"
-          decoding="async"
-          width="400"
-          height="400"
-        />
-      </div>
     </div>
   </div>
 </section>
@@ -89,12 +74,9 @@ const { about } = Astro.props;
     background: var(--card-border);
   }
 
-  /* 2カラムグリッド（デスクトップ） */
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-    align-items: center;
+  /* コンテンツ領域（最大幅制限） */
+  .about-content {
+    max-width: 800px;
   }
 
   /* テキストカラム */
@@ -112,51 +94,5 @@ const { about } = Astro.props;
     color: var(--text-muted);
     margin: 0;
     font-family: 'Noto Sans JP', 'Inter', sans-serif;
-  }
-
-  /* 画像フレーム（アースカラーのボーダー） */
-  .about-image-frame {
-    position: relative;
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    aspect-ratio: 1 / 1;
-  }
-
-  /* 画像フレームの装飾オフセット枠 */
-  .about-image-frame::before {
-    content: '';
-    position: absolute;
-    inset: -8px -8px 8px 8px;
-    border: 1px solid var(--button-border);
-    border-radius: 4px;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  /* プロフィール画像 */
-  .about-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    padding: 1rem;
-    background: var(--bg-color);
-  }
-
-  /* モバイル: 縦積みレイアウト */
-  @media (max-width: 768px) {
-    .about-grid {
-      grid-template-columns: 1fr;
-      gap: 3rem;
-    }
-
-    /* モバイルでは画像を先に表示 */
-    .about-image-wrap {
-      order: -1;
-      max-width: 280px;
-      margin: 0 auto;
-    }
   }
 </style>

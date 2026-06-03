@@ -45,6 +45,14 @@ const { skills } = Astro.props;
       </div>
     ))}
   </div>
+
+  <!-- アーカイブページへのリンク -->
+  <div class="skills-archive-link-wrap" data-reveal data-reveal-delay="200">
+    <a href="/works" class="skills-archive-link">
+      Goto archive
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
 </section>
 
 <style>
@@ -142,5 +150,63 @@ const { skills } = Astro.props;
       grid-template-columns: 1fr;
       gap: 1rem;
     }
+  }
+
+  /* アーカイブリンクコンテナ */
+  .skills-archive-link-wrap {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  /* アーカイブリンク */
+  .skills-archive-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--text-main);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding-bottom: 4px;
+    transition: color 0.3s ease;
+  }
+
+  /* 下線アニメーション用疑似要素 */
+  .skills-archive-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* アロー記号のホバー時アニメーション用設定 */
+  .skills-archive-link .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+
+  /* リンクのホバー時エフェクト */
+  .skills-archive-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+
+  .skills-archive-link:hover .arrow {
+    transform: translateX(4px);
+  }
+  
+  .skills-archive-link:hover {
+    color: var(--accent-color);
   }
 </style>

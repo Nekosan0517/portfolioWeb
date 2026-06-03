@@ -12,9 +12,11 @@ interface Props {
     nameEn: string;
     catchcopy: string;
   };
+  /** プロフィール画像のURL */
+  profileImage: string;
 }
 
-const { hero } = Astro.props;
+const { hero, profileImage } = Astro.props;
 ---
 
 <section class="hero-section" aria-label="ヒーロー">
@@ -22,26 +24,35 @@ const { hero } = Astro.props;
   <div class="hero-bg" aria-hidden="true"></div>
 
   <div class="hero-content">
+    <!-- プロフィール画像 -->
+    <div class="hero-image-wrap" data-reveal data-reveal-delay="0">
+      <div class="hero-image-frame">
+        <img
+          src={profileImage}
+          alt="嶺田拓磨のプロフィールイラスト"
+          class="hero-image"
+          loading="eager"
+          decoding="async"
+          width="400"
+          height="400"
+        />
+      </div>
+    </div>
+
     <!-- キャッチコピー -->
-    <p class="hero-catchcopy" data-reveal data-reveal-delay="0">
+    <p class="hero-catchcopy" data-reveal data-reveal-delay="150">
       {hero.catchcopy}
     </p>
 
     <!-- 日本語名 -->
-    <h1 class="hero-name-ja" data-reveal data-reveal-delay="150">
+    <h1 class="hero-name-ja" data-reveal data-reveal-delay="280">
       {hero.nameJa}
     </h1>
 
     <!-- 英語名 -->
-    <p class="hero-name-en" data-reveal data-reveal-delay="280">
+    <p class="hero-name-en" data-reveal data-reveal-delay="380">
       {hero.nameEn}
     </p>
-
-    <!-- スクロール促進ライン -->
-    <div class="hero-scroll-indicator" data-reveal data-reveal-delay="500" aria-hidden="true">
-      <span class="hero-scroll-line"></span>
-      <span class="hero-scroll-label">scroll</span>
-    </div>
   </div>
 </section>
 
@@ -52,6 +63,7 @@ const { hero } = Astro.props;
     min-height: 90vh;
     display: flex;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
     padding: 6rem 0 4rem;
   }
@@ -72,7 +84,10 @@ const { hero } = Astro.props;
     z-index: 1;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 1.2rem;
+    width: 100%;
   }
 
   /* キャッチコピー */
@@ -107,36 +122,62 @@ const { hero } = Astro.props;
     font-family: 'Inter', sans-serif;
   }
 
-  /* スクロール促進インジケーター */
-  .hero-scroll-indicator {
+  /* プロフィール画像ラッパー */
+  .hero-image-wrap {
+    width: 100%;
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 3rem;
+    justify-content: center;
+    margin-bottom: 2rem;
   }
 
-  /* スクロール促進ライン（アニメーション付き） */
-  .hero-scroll-line {
-    display: block;
-    width: 48px;
-    height: 1px;
-    background: var(--line-color);
-    animation: scroll-line-pulse 2.4s ease-in-out infinite;
-    transform-origin: left center;
+  /* プロフィール画像フレーム */
+  .hero-image-frame {
+    width: 70vw;
+    max-width: 400px;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 0.8rem;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
   }
 
-  /* スクロール促進ラベル */
-  .hero-scroll-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    color: var(--text-subtle);
-    text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* スクロールラインの点滅アニメーション */
-  @keyframes scroll-line-pulse {
-    0%, 100% { opacity: 0.3; transform: scaleX(1); }
-    50%       { opacity: 1;   transform: scaleX(1.4); }
+  /* プロフィール画像 */
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 </style>
+
+<script>
+  /**
+   * プロフィール画像の最大幅を元解像度とデザイン上限値から動的に調整する処理
+   */
+  function adjustImageMaxSize() {
+    const img = document.querySelector('.hero-image') as HTMLImageElement;
+    const frame = document.querySelector('.hero-image-frame') as HTMLElement;
+    
+    if (img && frame) {
+      /**
+       * 解像度上限を計算し、インラインCSSに適用する処理
+       */
+      const setLimit = () => {
+        // 元画像幅とデザイン上限（400px）の小さい方を採用
+        const maxLimit = Math.min(img.naturalWidth, 400);
+        frame.style.maxWidth = `${maxLimit}px`;
+      };
+
+      // 画像ロード完了状態に応じたイベント登録
+      if (img.complete) {
+        setLimit();
+      } else {
+        img.addEventListener('load', setLimit);
+      }
+    }
+  }
+
+  // ページ初期ロード時およびViewTransitions遷移時の処理実行登録
+  document.addEventListener('astro:page-load', adjustImageMaxSize);
+</script>

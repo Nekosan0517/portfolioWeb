@@ -18,7 +18,7 @@ const profile = profileEntry!.data;
   <ScrollReveal />
 
   <!-- ヒーローセクション -->
-  <HeroSection hero={profile.hero} />
+  <HeroSection hero={profile.hero} profileImage={profile.about.profileImage} />
 
   <!-- 自己紹介セクション -->
   <AboutSection about={profile.about} />
