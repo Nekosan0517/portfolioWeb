@@ -1,0 +1,28 @@
+---
+/**
+ * Reveal コンポーネント
+ * 任意の要素を囲み、スクロール連動ブラー解除アニメーションを適用するラッパー
+ */
+
+interface Props {
+	// アニメーション開始の遅延時間（ミリ秒）
+	delay?: number;
+	// ラップするHTML要素のタグ名
+	tag?: string;
+	// 追加のCSSクラス名
+	class?: string;
+}
+
+const { delay = 0, tag = 'div', class: className = '' } = Astro.props;
+
+// 動的タグ描画用の大文字変数定義
+const Tag = tag as any;
+---
+
+<Tag
+	class={className}
+	data-reveal
+	data-reveal-delay={String(delay)}
+>
+	<slot />
+</Tag>
