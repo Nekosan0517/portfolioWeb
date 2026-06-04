@@ -39,7 +39,7 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
           // 年別配列に基づく年セクションのレンダリング処理
           sortedYears.map(year => (
             <div data-year-group={year}>
-              <div class="flex items-center gap-5 mb-10">
+              <div class="flex items-center gap-5 mb-10" data-reveal data-reveal-delay="50">
                 <span class="text-xs tracking-[0.5em] text-[var(--text-main)] font-light whitespace-nowrap">
                   {year}年
                 </span>
@@ -94,7 +94,8 @@ const sortedYears = Object.keys(worksByYear).sort((a, b) => b.localeCompare(a));
     transition: opacity 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 filter 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     opacity: 1;
-    filter: blur(0px);
+    filter: none;
+    will-change: opacity, filter;
   }
 
   /* ソート中の非表示・ぼかし状態 */
