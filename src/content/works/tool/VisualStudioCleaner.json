@@ -7,12 +7,12 @@
   ],
   "photos": [
     {
-      "url": "/images/works/tool/sample_tool_1.png",
-      "caption": "設定画面のUI"
+      "url": "/images/works/tool/VSCreaner_Do.png",
+      "caption": "実行時の様子"
     }
   ],
   "category": "tool",
-  "thumbnail": "",
+  "thumbnail": "/images/works/tool/VSCleaner.png",
   "tags": [
     "C#",
     "VisualStudioCode"

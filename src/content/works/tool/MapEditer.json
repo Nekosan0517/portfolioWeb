@@ -7,16 +7,20 @@
   ],
   "photos": [
     {
-      "url": "/images/works/tool/map_editor_1.png",
-      "caption": "マップエディタの操作画面（タイル配置）"
+      "url": "/images/works/tool/MapEditor_SaveUI.png",
+      "caption": "ファイル保存時（呼び出し時も同様）のUI"
     },
     {
-      "url": "/images/works/tool/map_editor_2.png",
-      "caption": "出力されたエクセルデータと結合されたスプライトシート"
+      "url": "/images/works/tool/MapEditor_Choice.png",
+      "caption": "マップタイルの範囲選択の様子"
+    },
+    {
+      "url": "/images/works/tool/MapEditor_Paste.png",
+      "caption": "ペースト機能使用時の様子"
     }
   ],
   "category": "tool",
-  "thumbnail": "",
+  "thumbnail": "/images/works/tool/MapEditor.png",
   "tags": [
     "C/C++",
     "DXLibrary",

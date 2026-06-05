@@ -6,13 +6,17 @@
   ],
   "photos": [
     {
-      "url": "/images/works/tool/sample_tool_1.png",
-      "caption": "設定画面のUI"
+      "url": "/images/works/tool/Serial_HTTP.png",
+      "caption": "APIのレート制限調査用UI"
     }
   ],
   "category": "tool",
-  "thumbnail": "",
-  "tags": ["TypeScript", "Vite", "Node.js"],
+  "thumbnail": "/images/works/tool/Serial_HTTP.png",
+  "tags": [
+    "TypeScript",
+    "Vite",
+    "Node.js"
+  ],
   "url": "https://example.com/helper-tool",
   "date": "2023-11"
 }

@@ -1,0 +1,22 @@
+{
+  "title": "Serial通信-HTTP通信変換ソフト",
+  "descriptions": [
+    "SchooMy社にてインターンシップにて、開発業務を円滑に行うために作成。",
+    "SchooMyボードからのシリアル通信を低遅延でロブロックスと連携を行うため、Serial通信から変換してのHTTP通信ができるよう設計。"
+  ],
+  "photos": [
+    {
+      "url": "/images/works/tool/Serial_HTTP_TestUI.png",
+      "caption": "ロブロックスのAPI通信レート上限テストUI"
+    }
+  ],
+  "category": "tool",
+  "thumbnail": "/images/works/tool/Serial_HTTP.png",
+  "tags": [
+    "Python",
+    "Serial",
+    "HTTP"
+  ],
+  "url": "https://example.com/helper-tool",
+  "date": "2026-03"
+}

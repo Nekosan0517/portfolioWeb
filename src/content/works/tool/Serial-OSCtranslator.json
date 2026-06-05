@@ -4,14 +4,8 @@
     "SchooMy社でのインターンシップにて、開発業務を円滑に行うために作成。",
     "デバッグ作業における業務のためのUI設計に注力。"
   ],
-  "photos": [
-    {
-      "url": "/images/works/tool/sample_tool_1.png",
-      "caption": "設定画面のUI"
-    }
-  ],
   "category": "tool",
-  "thumbnail": "",
+  "thumbnail": "/images/works/tool/Serial_OSC.png",
   "tags": [
     "Python",
     "OSC",
