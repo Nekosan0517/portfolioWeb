@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PhotoCarousel from '../../components/PhotoCarousel.astro';
 import { formatDisplayDate } from '../../utils/date';
+import { isVideoFile } from '../../utils/video';
 
 /**
  * ページ生成用の動的ルートパス生成処理。
@@ -31,6 +32,8 @@ const { title, descriptions, category, tags, url, thumbnail, date, photos } = en
 // 公開年月文字列のフォーマット変換処理
 const displayDate = formatDisplayDate(date);
 const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
+// サムネイルが動画ファイルかどうかの判定処理
+const isVideo = isVideoFile(thumbnail);
 ---
 
 <BaseLayout title={`${title} | Works`} activeCategory={category}>
@@ -55,11 +58,20 @@ const displayCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
 		<section class="mb-16 flex justify-center" data-reveal data-reveal-delay="200">
 			{thumbnail ? (
-				<img 
-					src={thumbnail} 
-					alt={title} 
-					class="max-w-full max-h-[600px] object-contain border border-[#B36C34]/20 shadow-sm rounded-sm"
-				/>
+				isVideo ? (
+					<video
+						src={thumbnail}
+						controls
+						preload="metadata"
+						class="max-w-full max-h-[600px] object-contain border border-[#B36C34]/20 shadow-sm rounded-sm"
+					/>
+				) : (
+					<img 
+						src={thumbnail} 
+						alt={title} 
+						class="max-w-full max-h-[600px] object-contain border border-[#B36C34]/20 shadow-sm rounded-sm"
+					/>
+				)
 			) : (
 				<div class="aspect-video w-full flex items-center justify-center bg-[var(--card-bg)] border border-[#B36C34]/20 shadow-sm rounded-sm text-[var(--text-subtle)]/10 uppercase tracking-[0.5em]">
 					Visual Archive Empty

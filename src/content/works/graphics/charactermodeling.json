@@ -1,0 +1,15 @@
+{
+  "title": "キャラクターモデリング",
+  "descriptions": [
+    "Mayaによるモデリング、リギング、アニメーションの作成、 After Effectsでの書き出しを行なったアニメーションです。",
+    "大学の課題にて作成したものになり、モデリングからリギング、アニメーション作成までを行なっています。"
+  ],
+  "category": "graphics",
+  "thumbnail": "/images/works/graphics/CharaModeling.mp4",
+  "thumbnailTime": 1.0,
+  "tags": [
+    "Maya",
+    "After Effects"
+  ],
+  "date": "2024-12"
+}

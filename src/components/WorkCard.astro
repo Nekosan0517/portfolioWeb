@@ -1,16 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { formatDisplayDate } from '../utils/date';
+import { isVideoFile } from '../utils/video';
 
 interface Props {
   work: CollectionEntry<'works'>;
 }
 
 const { work } = Astro.props;
-const { title, thumbnail, tags, date } = work.data;
+const { title, thumbnail, thumbnailTime, tags, date } = work.data;
 
 // 公開年月文字列のフォーマット変換処理
 const displayDate = formatDisplayDate(date);
+// サムネイルが動画ファイルかどうかの判定処理
+const isVideo = isVideoFile(thumbnail);
 ---
 
 <article class="group relative" data-reveal data-date={date}>
@@ -25,11 +28,21 @@ const displayDate = formatDisplayDate(date);
 			</div>
 
 			{thumbnail ? (
-				<img
-					src={thumbnail}
-					alt={title}
-					class="w-full h-full object-cover"
-				/>
+				isVideo ? (
+					<video
+						src={`${thumbnail}${thumbnailTime !== undefined ? `#t=${thumbnailTime}` : ''}`}
+						preload="metadata"
+						muted
+						playsinline
+						class="w-full h-full object-cover"
+					/>
+				) : (
+					<img
+						src={thumbnail}
+						alt={title}
+						class="w-full h-full object-cover"
+					/>
+				)
 			) : (
 				<div class="w-full h-full flex items-center justify-center text-[var(--text-subtle)]/30 text-xs tracking-widest uppercase">
 					No Image

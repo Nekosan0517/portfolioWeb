@@ -17,8 +17,10 @@ const worksCollection = defineCollection({
         caption: z.string().optional(),
       })
     ).optional(),
-    category: z.enum(['game', 'tool', 'video', 'photo']),
+    category: z.enum(['game', 'tool', 'graphics', 'photo', 'others']),
     thumbnail: z.string().optional(),
+    /** 動画サムネイルの静止画表示時間（秒単位） */
+    thumbnailTime: z.number().optional(),
     /** 使用技術・タグ（例: ["TypeScript", "Unity"]） */
     tags: z.array(z.string()),
     /** 外部リンク（URL形式） */

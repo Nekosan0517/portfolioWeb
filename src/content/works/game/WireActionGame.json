@@ -1,5 +1,5 @@
 {
-  "title": "ゲームタイトル",
+  "title": "マガリモノ",
   "descriptions": [
     "大学のゲーム制作実習にて作成。チームリーダー兼メインプログラマを務めました。",
     "プログラムでは根幹設計から物理演算、ワイヤー処理の実装を行い、コントローラー操作への対応作業以外を担当しました。",
@@ -7,16 +7,28 @@
   ],
   "photos": [
     {
-      "url": "/images/works/game/wire_action_1.png",
-      "caption": "ゲームプレイ画面（ワイヤー移動アクション）"
+      "url": "/images/works/game/WireGame_Home.png",
+      "caption": "ゲームのホーム画面"
     },
     {
-      "url": "/images/works/game/wire_action_2.png",
-      "caption": "ボス戦ステージの画面"
+      "url": "/images/works/game/WireGame_Stageselect.png",
+      "caption": "ゲームのステージ選択画面"
+    },
+    {
+      "url": "/images/works/game/WireGame_Playing1.png",
+      "caption": "ゲームプレイ中画面"
+    },
+    {
+      "url": "/images/works/game/WireGame_Playing2.png",
+      "caption": "ゲームプレイ中画面"
+    },
+    {
+      "url": "/images/works/game/WireGame_Playing3.png",
+      "caption": "ゲームプレイ中画面"
     }
   ],
   "category": "game",
-  "thumbnail": "",
+  "thumbnail": "/images/works/game/WireGame_Title.png",
   "tags": [
     "C/C++",
     "DXLibrary",

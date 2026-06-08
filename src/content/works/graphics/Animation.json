@@ -1,0 +1,15 @@
+{
+  "title": "3Dボールアニメーション",
+  "descriptions": [
+    "Mayaによるアニメーションの作成、 After Effectsでの書き出しを行なったアニメーションです。",
+    "テクスチャ、モデル、リグは用意されたものを使用し、アニメーション制作を主に行いました。"
+  ],
+  "category": "graphics",
+  "thumbnail": "/images/works/graphics/535516083005161587.mp4",
+  "thumbnailTime": 1.0,
+  "tags": [
+    "Maya",
+    "After Effects"
+  ],
+  "date": "2025-01"
+}

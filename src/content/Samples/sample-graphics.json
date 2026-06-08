@@ -6,11 +6,11 @@
   ],
   "photos": [
     {
-      "url": "/images/works/video/sample_video_1.png",
+      "url": "/images/works/graphics/sample_video_1.png",
       "caption": "レンダリングされた都市のワンシーン"
     }
   ],
-  "category": "video",
+  "category": "graphics",
   "thumbnail": "",
   "tags": ["Blender", "After Effects", "Premiere Pro"],
   "url": "https://example.com/motion-video",
