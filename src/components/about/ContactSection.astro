@@ -4,6 +4,12 @@
  * profile.json の contact 配列を受け取りレンダリングする
  * type フィールド（"email" | "github" | "twitter" | "link"）でアイコンを切り替える拡張可能な設計
  * JSONに要素を追加するだけで自動的にリンクが増える
+ *
+ * [セキュリティ設計]
+ * email タイプのみ、HTMLソース上にメールアドレスを直接出力しない。
+ * ビルド時にアカウント名とドメインへ分割し data 属性として格納。
+ * クライアントサイドのクリックイベント発火時にのみ復元・起動することで、
+ * クローラーによるメールアドレス自動収集（スパムリスト作成）を防止する。
  */
 
 interface ContactItem {
@@ -14,6 +20,12 @@ interface ContactItem {
   href: string;
 }
 
+/** emailタイプのアドレス分割結果 */
+interface EmailParts {
+  user: string;
+  domain: string;
+}
+
 interface Props {
   /** コンタクト情報配列（profile.json の contact フィールド） */
   contact: ContactItem[];
@@ -22,8 +34,22 @@ interface Props {
 const { contact } = Astro.props;
 
 /**
- * type に対応するSVGアイコンパスデータ取得処理
- * 新しいtypeを追加する場合はここにcaseを追加するだけでよい
+ * メールアドレスをアカウント名とドメインに分割する処理。
+ * 不正な形式の場合は空文字列を返す。
+ * @param email XXXX@XXXX.XXX 形式のメールアドレス
+ */
+function splitEmail(email: string): EmailParts {
+  const atIndex = email.indexOf('@');
+  if (atIndex === -1) return { user: '', domain: '' };
+  return {
+    user: email.slice(0, atIndex),
+    domain: email.slice(atIndex + 1),
+  };
+}
+
+/**
+ * type に対応するSVGアイコンパスデータ取得処理。
+ * 新しい type を追加する場合は case を追加するだけでよい。
  */
 function getIconPath(type: string): string {
   switch (type) {
@@ -48,18 +74,27 @@ function getIconPath(type: string): string {
 
   <!-- コンタクトリンク一覧 -->
   <ul class="contact-list" role="list">
-    {contact.map((item, i) => (
+    {contact.map((item, i) => {
+    const isEmail = item.type === 'email';
+    // emailタイプのみアカウント名とドメインに分割してdata属性へ格納
+    const emailParts = isEmail ? splitEmail(item.value) : null;
+    // 表示用テキスト: emailはアドレスを一切表示せず固定テキスト、それ以外はそのまま
+    const displayValue = isEmail ? 'Send Email' : item.value;
+
+    return (
       <li
         class="contact-item"
         data-reveal
         data-reveal-delay={String(i * 100)}
       >
         <a
-          href={item.href}
-          class="contact-link"
-          aria-label={`${item.label}: ${item.value}`}
-          target={item.type !== 'email' ? '_blank' : undefined}
-          rel={item.type !== 'email' ? 'noopener noreferrer' : undefined}
+          href={isEmail ? '#' : item.href}
+          class={`contact-link${isEmail ? ' js-email-link' : ''}`}
+          aria-label={`${item.label}: ${displayValue}`}
+          data-email-user={emailParts?.user ?? undefined}
+          data-email-domain={emailParts?.domain ?? undefined}
+          target={!isEmail ? '_blank' : undefined}
+          rel={!isEmail ? 'noopener noreferrer' : undefined}
         >
           <!-- typeに応じたSVGアイコン -->
           <svg
@@ -76,16 +111,55 @@ function getIconPath(type: string): string {
 
           <span class="contact-info">
             <span class="contact-label">{item.label}</span>
-            <span class="contact-value">{item.value}</span>
+            {/* emailは難読化テキスト、それ以外は元の値をそのまま表示 */}
+            <span class="contact-value">{displayValue}</span>
           </span>
 
           <!-- 右矢印装飾 -->
           <span class="contact-arrow" aria-hidden="true">→</span>
         </a>
       </li>
-    ))}
+    );
+  })}
   </ul>
 </section>
+
+<script>
+  /**
+   * メールアドレス動的組み立て処理のセットアップ
+   *
+   * [設計意図]
+   * HTMLソース上にはメールアドレスをそのまま出力せず、
+   * クリック発火時にのみ data 属性からアカウント名とドメインを結合し
+   * mailto: スキームを起動することで、クローラーによる収集を防止する。
+   */
+  function setupEmailLinks(): void {
+    // 未セットアップのメールリンク要素の取得
+    const links = document.querySelectorAll<HTMLAnchorElement>(
+      '.js-email-link:not([data-email-initialized])'
+    );
+
+    // 各メールリンクへのクリックイベント登録
+    links.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        // data属性からアカウント名とドメインを取得
+        const user = link.getAttribute('data-email-user');
+        const domain = link.getAttribute('data-email-domain');
+        if (!user || !domain) return;
+        // メールクライアントの起動
+        window.location.href = `mailto:${user}@${domain}`;
+      });
+      // 多重登録防止用マーカーの付与
+      link.setAttribute('data-email-initialized', 'true');
+    });
+  }
+
+  // 初期ロード時の実行
+  setupEmailLinks();
+  // SPA遷移後の再初期化
+  document.addEventListener('astro:page-load', setupEmailLinks);
+</script>
 
 <style>
   /* コンタクトセクション全体 */
