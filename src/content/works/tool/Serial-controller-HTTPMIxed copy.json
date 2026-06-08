@@ -6,12 +6,20 @@
   ],
   "photos": [
     {
-      "url": "/images/works/tool/sample_tool_1.png",
-      "caption": "設定画面のUI"
+      "url": "/images/works/tool/Serial_HTTPandController_Maping.png",
+      "caption": "コントローラーマッピング設定画面のUI"
+    },
+    {
+      "url": "/images/works/tool/Serial_HTTPandController_LogMonitor.png",
+      "caption": "APIエラーや送信データなどデバッグ用ログモニタ"
+    },
+    {
+      "url": "/images/works/tool/Serial_HTTPandController_Maping.png",
+      "caption": "HTTP送信時のデータ形式設定画面"
     }
   ],
   "category": "tool",
-  "thumbnail": "",
+  "thumbnail": "/images/works/tool/Serial_HTTPandController_APISettings.png",
   "tags": [
     "Python",
     "Serial",

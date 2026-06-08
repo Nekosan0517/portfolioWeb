@@ -25,6 +25,8 @@ const worksCollection = defineCollection({
     tags: z.array(z.string()),
     /** 外部リンク（URL形式） */
     url: z.string().url().optional(),
+    /** 外部リンクのテキスト */
+    urlText: z.string().optional(),
     /** 公開年月（YYYY-MM 形式） */
     date: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
   }),
