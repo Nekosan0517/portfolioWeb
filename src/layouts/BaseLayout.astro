@@ -28,6 +28,14 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<!-- Google Fonts: preconnect によるDNS先行解決 -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<!-- フォントロード: Inter / Noto Serif JP / Noto Sans JP -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Serif+JP:wght@200;400&family=Noto+Sans+JP:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
 		<ViewTransitions />
 	</head>
 	<body class="bg-[var(--bg-color)] text-[var(--text-main)] overflow-x-hidden selection:bg-[#8EA5A5]/30">
